@@ -17,7 +17,7 @@ class LoadMeterController extends Controller {
 	public function set_meter($name, $bus, $addr, $min, $max, $val) {
 
 		$meter = new LoadMeter($name, intval($bus), intval($addr), intval($min), intval($max));
-		$meter->set_load(doubleval($val) / doubleval($max));
+		$return = $meter->set_load(intval($val));
 		$load = $meter->get_load();
 
 		return "{load: $load}";

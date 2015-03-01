@@ -26,7 +26,7 @@
 						<li><a href="/curve/calculate/2/1/0/120/1/30">Demo 1</a></li>
 						<li><a href="/curve/create">Add Curve</a></li>
 						<li><a href="/curve">List Curves</a></li>
-						<li><a href="/meter/test/fun/0/0/0/6">Meter Test</a></li>
+						<li><a href="/meter/test/fun/1/56/0/8">Meter Test</a></li>
 					</ul>
 				</div>
 			</div>
