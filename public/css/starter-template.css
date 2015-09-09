@@ -1,0 +1,53 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+padding: 40px 0;
+}
+
+span.glyphicon-cog-va-tt {
+	line-height: inherit;
+	vertical-align: text-top;
+}
+
+@media screen {
+	.bolder-brighter,
+	.navbar-inverse .navbar-nav > li > a.bolder-brighter:link,
+	.navbar-inverse .navbar-nav > li > a.bolder-brighter:visited {
+		color: #DDD;
+	}
+	.navbar-inverse .navbar-nav > li > a.bolder-brighter:hover {
+		color: #FFF;
+	}
+	.navbar-inverse .navbar-brand {
+		color: #DDD;
+	}
+	.form-group-lg > .control-label {
+		font-size: 18px;
+	}
+	.form-group-lg > .form-control {
+		height: 46px;
+		padding: 10px 16px;
+		font-size: 18px;
+		line-height: 1.33;
+		border-radius: 6px;
+	}
+	.navbar-nav > li > a {
+		font-size: 16px;
+	}
+	a.navbar-brand-lg {
+		font-size: 24px;
+	}
+	.alert {
+		font-size: 16px;
+	}
+	.panel-heading a:after {
+		font-family: 'Glyphicons Halflings';
+		content: "\e114";
+		float: right;
+		color: grey;
+	}
+	.panel-heading a.collapsed:after {
+		content: "\e080";
+	}
+}

@@ -1,0 +1,257 @@
+@extends('layouts.master')
+
+@section('content')
+<div class="page-header">
+	<h1>Compose {{ $curve1->name }} and {{ $curve2->name }}.</h1>
+</div>
+<h2>{{ $curve1->name }} Load Chart</h2>
+<div id="load1Chartdiv" style="width: 100%; height: 400px;"></div>
+<h2>{{ $curve2->name }} Load Chart</h2>
+<div id="load2Chartdiv" style="width: 100%; height: 400px;"></div>
+<h2>Composite Load Chart</h2>
+<div id="loadCompChartdiv" style="width: 100%; height: 400px;"></div>
+<h2>Demand Charges</h2>
+<div id="demandChartdiv" style="width: 100%; height: 400px;"></div>
+@stop
+
+@section('body_post')
+{!! Html::script('js/amcharts/amcharts.js') !!}
+{!! Html::script('js/amcharts/xy.js') !!}
+{!! Html::script('js/amcharts/serial.js') !!}
+<script>
+            var demandChart;
+
+            var demandData = [
+		@foreach($demand as $key => $val)
+                {
+                    "ax": {{ $val[0] }},
+                    "ay": {{ $val[1] }},
+                },
+		@endforeach
+            ];
+
+	    var load1Chart;
+
+            var load1Data = [
+		@foreach($curve1->parse_data() as $point)
+                {
+                    "ax": {{ $point[0] }},
+                    "ay": {{ $point[1] }},
+                },
+		@endforeach
+            ];
+
+	    var load2Chart;
+
+            var load2Data = [
+		@foreach($curve2->parse_data() as $point)
+                {
+                    "ax": {{ $point[0] }},
+                    "ay": {{ $point[1] }},
+                },
+		@endforeach
+            ];
+
+	    var loadCompChart;
+
+            var loadCompData = [
+		@foreach($min[2] as $key => $val)
+                {
+                    "ax": {{ $key }},
+                    "ay": {{ $val }},
+                },
+		@endforeach
+            ];
+
+	AmCharts.ready(function () {
+                // SERIAL CHART
+                demandChart = new AmCharts.AmSerialChart();
+                demandChart.dataProvider = demandData;
+                demandChart.categoryField = "ax";
+                demandChart.startDuration = 1;
+
+                // AXES
+                // category
+                var categoryAxis = demandChart.categoryAxis;
+                categoryAxis.labelRotation = 90;
+                categoryAxis.gridPosition = "start";
+
+                // value
+                // in case you don't want to change default settings of value axis,
+                // you don't need to create it, as one value axis is created automatically.
+
+                // GRAPH
+                var graph = new AmCharts.AmGraph();
+                graph.valueField = "ay";
+                graph.balloonText = "[[category]]: <b>[[value]]</b>";
+                graph.type = "column";
+                graph.lineAlpha = 0;
+                graph.fillAlphas = 0.8;
+                demandChart.addGraph(graph);
+
+                // CURSOR
+                var demandChartCursor = new AmCharts.ChartCursor();
+                demandChartCursor.cursorAlpha = 0;
+                demandChartCursor.zoomable = false;
+                demandChartCursor.categoryBalloonEnabled = false;
+                demandChart.addChartCursor(demandChartCursor);
+
+                demandChart.creditsPosition = "top-right";
+
+                demandChart.write("demandChartdiv");
+
+                // LOAD 1 CHART
+                load1Chart = new AmCharts.AmXYChart();
+
+                load1Chart.dataProvider = load1Data;
+                load1Chart.startDuration = 1;
+
+                // AXES
+                // X
+                var xAxis = new AmCharts.ValueAxis();
+                xAxis.title = "Time (Minutes)";
+                xAxis.position = "bottom";
+                xAxis.dashLength = 1;
+                xAxis.axisAlpha = 0;
+                xAxis.autoGridCount = true;
+                load1Chart.addValueAxis(xAxis);
+
+                // Y
+                var yAxis = new AmCharts.ValueAxis();
+                yAxis.position = "left";
+                yAxis.title = "Load (Watts)";
+                yAxis.dashLength = 1;
+                yAxis.axisAlpha = 0;
+                yAxis.autoGridCount = true;
+                load1Chart.addValueAxis(yAxis);
+
+                // GRAPHS
+                // triangles up
+                var graph1 = new AmCharts.AmGraph();
+                graph1.lineColor = "#FF6600";
+                graph1.balloonText = "x:[[x]] y:[[y]]";
+                graph1.xField = "ax";
+                graph1.yField = "ay";
+                graph1.lineAlpha = 0;
+                graph1.bullet = "circle";
+                load1Chart.addGraph(graph1);
+
+                // CURSOR
+                var load1ChartCursor = new AmCharts.ChartCursor();
+                load1Chart.addChartCursor(load1ChartCursor);
+
+                // SCROLLBAR
+
+                var load1ChartScrollbar = new AmCharts.ChartScrollbar();
+                load1ChartScrollbar.scrollbarHeight = 5;
+                load1ChartScrollbar.offset = 15
+                load1Chart.addChartScrollbar(load1ChartScrollbar);
+
+                // WRITE
+                load1Chart.write("load1Chartdiv");
+
+		// LOAD 2 CHART
+                load2Chart = new AmCharts.AmXYChart();
+
+                load2Chart.dataProvider = load2Data;
+                load2Chart.startDuration = 1;
+
+                // AXES
+                // X
+                var xAxis = new AmCharts.ValueAxis();
+                xAxis.title = "Time (Minutes)";
+                xAxis.position = "bottom";
+                xAxis.dashLength = 1;
+                xAxis.axisAlpha = 0;
+                xAxis.autoGridCount = true;
+                load2Chart.addValueAxis(xAxis);
+
+                // Y
+                var yAxis = new AmCharts.ValueAxis();
+                yAxis.position = "left";
+                yAxis.title = "Load (Watts)";
+                yAxis.dashLength = 1;
+                yAxis.axisAlpha = 0;
+                yAxis.autoGridCount = true;
+                load2Chart.addValueAxis(yAxis);
+
+                // GRAPHS
+                // triangles up
+                var graph1 = new AmCharts.AmGraph();
+                graph1.lineColor = "#FF6600";
+                graph1.balloonText = "x:[[x]] y:[[y]]";
+                graph1.xField = "ax";
+                graph1.yField = "ay";
+                graph1.lineAlpha = 0;
+                graph1.bullet = "circle";
+                load2Chart.addGraph(graph1);
+
+                // CURSOR
+                var load2ChartCursor = new AmCharts.ChartCursor();
+                load2Chart.addChartCursor(load2ChartCursor);
+
+                // SCROLLBAR
+
+                var load2ChartScrollbar = new AmCharts.ChartScrollbar();
+                load2ChartScrollbar.scrollbarHeight = 5;
+                load2ChartScrollbar.offset = 15
+                load2Chart.addChartScrollbar(load2ChartScrollbar);
+
+                // WRITE
+                load2Chart.write("load2Chartdiv");
+
+		// LOAD COMP CHART
+                loadCompChart = new AmCharts.AmXYChart();
+
+                loadCompChart.dataProvider = loadCompData;
+                loadCompChart.startDuration = 1;
+
+                // AXES
+                // X
+                var xAxis = new AmCharts.ValueAxis();
+                xAxis.title = "Time (Minutes)";
+                xAxis.position = "bottom";
+                xAxis.dashLength = 1;
+                xAxis.axisAlpha = 0;
+                xAxis.autoGridCount = true;
+                loadCompChart.addValueAxis(xAxis);
+
+                // Y
+                var yAxis = new AmCharts.ValueAxis();
+                yAxis.position = "left";
+                yAxis.title = "Load (Watts)";
+                yAxis.dashLength = 1;
+                yAxis.axisAlpha = 0;
+                yAxis.autoGridCount = true;
+                loadCompChart.addValueAxis(yAxis);
+
+                // GRAPHS
+                // triangles up
+                var graph1 = new AmCharts.AmGraph();
+                graph1.lineColor = "#FF6600";
+                graph1.balloonText = "x:[[x]] y:[[y]]";
+                graph1.xField = "ax";
+                graph1.yField = "ay";
+                graph1.lineAlpha = 0;
+                graph1.bullet = "circle";
+                loadCompChart.addGraph(graph1);
+
+                // CURSOR
+                var loadCompChartCursor = new AmCharts.ChartCursor();
+                loadCompChart.addChartCursor(loadCompChartCursor);
+
+                // SCROLLBAR
+
+                var loadCompChartScrollbar = new AmCharts.ChartScrollbar();
+                loadCompChartScrollbar.scrollbarHeight = 5;
+                loadCompChartScrollbar.offset = 15
+                loadCompChart.addChartScrollbar(loadCompChartScrollbar);
+
+                // WRITE
+                loadCompChart.write("loadCompChartdiv");
+
+
+
+            });
+        </script>
+@stop
