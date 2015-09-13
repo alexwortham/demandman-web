@@ -4,9 +4,10 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>@yeild('title')</title>
+		<title>@yield('title')</title>
 		{!! Html::style('css/bootstrap.min.css') !!}
 		{!! Html::style('css/starter-template.css') !!}
+		@yield('styles')
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -25,7 +26,7 @@
 						<li><a href="/curve/calculate/2/1/0/120/1/30">Demo 1</a></li>
 						<li><a href="/curve/create">Add Curve</a></li>
 						<li><a href="/curve">List Curves</a></li>
-						<li>Item 3</li>
+						<li><a href="/meter/test/fun/0/0/0/6">Meter Test</a></li>
 					</ul>
 				</div>
 			</div>
