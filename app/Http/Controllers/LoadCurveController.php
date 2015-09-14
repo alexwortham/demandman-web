@@ -69,7 +69,7 @@ class LoadCurveController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('curves/edit', ['curve' => LoadCurve::find($id)]);
     }
 
     /**
@@ -81,7 +81,14 @@ class LoadCurveController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+	$curve = LoadCurve::find($id);
+
+	$curve->name = $request->name;
+	$curve->data = $request->data;
+
+	$curve->save();
+
+        return view('curves/show', ['curve' => $curve]);
     }
 
     /**
