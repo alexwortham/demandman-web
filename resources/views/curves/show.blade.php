@@ -5,6 +5,7 @@
 	<h1>{{ $curve->name }}</h1>
 </div>
 <div id="chartdiv" style="width: 100%; height: 400px;"></div>
+<a href="{{ action('LoadCurveController@edit', $curve->id) }}" class="btn btn-lg btn-primary">Edit</a>
 @stop
 
 @section('body_post')
