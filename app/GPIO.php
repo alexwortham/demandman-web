@@ -36,12 +36,12 @@ class GPIO
 
 		$this->value = $value;
 
-		return gpio_output($pin, $value);
+		return gpio_output($this->pin, $value);
 	}
 
 	public function input() {
 
-		return gpio_input($pin);
+		return gpio_input($this->pin);
 	}
 
 	public function get_mode() {
