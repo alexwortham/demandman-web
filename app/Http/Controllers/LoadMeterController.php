@@ -1,10 +1,21 @@
-<?php namespace App\Http\Controllers;
+<?php 
+
+/**
+ * 
+ */
+namespace App\Http\Controllers;
 
 use App\LoadMeter;
 
+/**
+ * 
+ */
 class LoadMeterController extends Controller {
 
 
+	/**
+	 * 
+	 */
 	public function test($name, $bus, $addr, $min, $max) {
 
 		return view('meter/test', ['name' => $name,
@@ -14,6 +25,9 @@ class LoadMeterController extends Controller {
 			'max' => $max]);
 	}
 
+	/**
+	 * 
+	 */
 	public function set_meter($name, $bus, $addr, $min, $max, $val) {
 
 		$meter = new LoadMeter($name, intval($bus), intval($addr), intval($min), intval($max));
