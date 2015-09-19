@@ -1,0 +1,2 @@
+#!/bin/sh
+phpdoc -d ./app -i Console/,Events/,Listeners/,Providers/,Jobs/,Http/Controllers/Auth/,Http/Requests/,Http/Middleware/,Exceptions/,Http/Kernel.php,User.php -t ./public/docs --cache-folder ./storage/docs
