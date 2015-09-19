@@ -8,7 +8,7 @@ class Relay
 {
 	const ON = 1;
 	const OFF = 0;
-	private const GPIO_OUTPUT_MODE = 1;
+	const GPIO_OUTPUT_MODE = 1;
 	private $pin;
 	private $gpio;
 	private $state;
