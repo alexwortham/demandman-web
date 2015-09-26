@@ -16,6 +16,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\SomeEvent' => [
             'App\Listeners\EventListener',
         ],
+	'App\Events\AppStartAckEvent' => [
+	    'App\Listeners\AppStartAckListener',
+	],
     ];
 
     /**

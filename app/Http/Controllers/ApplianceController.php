@@ -5,6 +5,11 @@
  */
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Events\StartAppEvent;
+use Event;
+use App\Appliance;
+
 /**
  * 
  */
@@ -19,6 +24,10 @@ class ApplianceController extends Controller {
   {
     
   }
+
+	public function start($id) {
+		Event::fire(new StartAppEvent(Appliance::find($id)));
+	}
 
   /**
    * Show the form for creating a new resource.
@@ -35,9 +44,15 @@ class ApplianceController extends Controller {
    *
    * @return Response
    */
-  public function store()
+  public function store(Request $request)
   {
-    
+    $appliance = new Appliance;
+    $appliance->name = $request->name;
+    $appliance->type = $request->type;
+
+    $appliance->save();
+
+    return view('appliances');
   }
 
   /**

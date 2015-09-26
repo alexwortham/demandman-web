@@ -119,7 +119,16 @@ return [
             'host'     => '127.0.0.1',
             'port'     => 6379,
             'database' => 0,
+	    'read_write_timeout' => -1,
         ],
+
+        'queue' => [
+            'host'     => '127.0.0.1',
+            'port'     => 6379,
+            'database' => 1,
+	    'read_write_timeout' => -1,
+        ],
+
 
     ],
 
