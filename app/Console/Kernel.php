@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         \App\Console\Commands\Inspire::class,
         \App\Console\Commands\RedisSubscribe::class,
+//        \App\Console\Commands\PcntlTest::class,
+        \App\Console\Commands\DaemonCommand::class,
     ];
 
     /**

@@ -16,6 +16,7 @@ class AppStartAckListener implements ShouldQueue
     public function __construct()
     {
         //
+	printf("%d: Building new AppStartAckListener.\n", posix_getpid());
     }
 
     /**
@@ -26,7 +27,7 @@ class AppStartAckListener implements ShouldQueue
      */
     public function handle(AppStartAckEvent $event)
     {
-        echo "I did something naughty";
+        printf("%d: I did something naughty\n", posix_getpid());
 	//Here we check if the request is approved or denied,
 	//and start the simulation if necessary.
     }
