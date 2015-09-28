@@ -6,9 +6,11 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class AppStartAckEvent extends AppActionAckEvent
+class AppActionAckEvent extends Event
 {
     use SerializesModels;
+
+    public $data;
 
     /**
      * Create a new event instance.
@@ -17,6 +19,6 @@ class AppStartAckEvent extends AppActionAckEvent
      */
     public function __construct($data)
     {
-	parent::__construct($data);
+        $this->data = $data;
     }
 }

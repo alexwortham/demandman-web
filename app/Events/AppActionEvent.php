@@ -5,10 +5,8 @@ namespace App\Events;
 use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use App\Appliance;
-use App\LoadCurve;
 
-class StartAppEvent extends AppActionEvent implements ShouldBroadcast
+class AppActionEvent extends Event implements ShouldBroadcast
 {
     use SerializesModels;
 
@@ -31,6 +29,7 @@ class StartAppEvent extends AppActionEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['dm.' . $this->appliance->id . '.start'];
+	$action = 'foo';
+        return ['dm.' . $this->appliance->id . ".$action"];
     }
 }

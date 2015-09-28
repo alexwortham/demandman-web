@@ -6,7 +6,7 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class AppStartAckEvent extends AppActionAckEvent
+class AppPauseAckEvent extends AppActionAckEvent
 {
     use SerializesModels;
 

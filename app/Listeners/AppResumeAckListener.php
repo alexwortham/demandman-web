@@ -2,11 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Events\AppStartAckEvent;
+use App\Events\AppResumeAckEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AppStartAckListener extends AppActionAckListener implements ShouldQueue
+class AppResumeAckListener extends AppActionAckListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -21,12 +21,13 @@ class AppStartAckListener extends AppActionAckListener implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  AppStartAckEvent  $event
+     * @param  AppResumeAckEvent  $event
      * @return void
      */
-    public function handle(AppStartAckEvent $event)
+    public function handle(AppResumeAckEvent $event)
     {
-        printf("AppStartAckEvent received.\n");
+        //
+        printf("AppResumeAckEvent received.\n");
 	//Here we check if the request is approved or denied,
 	//and start the simulation if necessary.
 	parent::handle($event);
