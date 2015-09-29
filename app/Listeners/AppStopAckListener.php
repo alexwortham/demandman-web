@@ -6,7 +6,7 @@ use App\Events\AppStopAckEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AppStopAckListener extends AppActionAckListener implements ShouldQueue
+class AppStopAckListener extends AppActionAckListener
 {
     /**
      * Create the event listener.
@@ -24,7 +24,7 @@ class AppStopAckListener extends AppActionAckListener implements ShouldQueue
      * @param  AppStopAckEvent  $event
      * @return void
      */
-    public function handle(AppStopAckEvent $event)
+    public function handle($event)
     {
         printf("AppStopAckEvent received.\n");
 	//Here we check if the request is approved or denied,

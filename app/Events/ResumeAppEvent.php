@@ -8,11 +8,11 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Appliance;
 use App\LoadCurve;
 
-class StartAppEvent extends AppActionEvent
+class ResumeAppEvent extends AppActionEvent
 {
     use SerializesModels;
 
-    const EVT_TYPE = 'start';
+    const EVT_TYPE = 'resume';
 
     /**
      * Create a new event instance.

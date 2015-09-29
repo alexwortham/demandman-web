@@ -23,6 +23,10 @@ Route::post('curve/update/{id}', ['as' => 'curve_update', 'uses' => 'LoadCurveCo
 Route::get('curve/reduce/{id}/{min}/{max}/{dt}', ['uses' => 'LoadCurveController@reduce']);
 Route::get('curve/calculate/{c1}/{c2}/{min}/{max}/{dt}/{dl}', ['uses' => 'LoadCurveController@calculate']);
 Route::get('appliance/{id}/start', ['uses' => 'ApplianceController@start']);
+Route::get('appliance/{id}/stop', ['uses' => 'ApplianceController@stop']);
+Route::get('appliance/{id}/pause', ['uses' => 'ApplianceController@pause']);
+Route::get('appliance/{id}/wake', ['uses' => 'ApplianceController@wake']);
+Route::get('appliance/{id}/resume', ['uses' => 'ApplianceController@resume']);
 
 Route::resource('appliance', 'ApplianceController');
 Route::resource('sensor', 'SensorController');

@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\RedisSubscribe::class,
 //        \App\Console\Commands\PcntlTest::class,
         \App\Console\Commands\DaemonCommand::class,
+        \App\Console\Commands\SimulatorCommand::class,
     ];
 
     /**

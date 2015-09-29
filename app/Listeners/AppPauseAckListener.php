@@ -6,7 +6,7 @@ use App\Events\AppPauseAckEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AppPauseAckListener extends AppActionAckListener implements ShouldQueue
+class AppPauseAckListener extends AppActionAckListener
 {
     /**
      * Create the event listener.
@@ -24,7 +24,7 @@ class AppPauseAckListener extends AppActionAckListener implements ShouldQueue
      * @param  AppPauseAckEvent  $event
      * @return void
      */
-    public function handle(AppPauseAckEvent $event)
+    public function handle($event)
     {
         //
         printf("AppPauseAckEvent received.\n");

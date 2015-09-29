@@ -7,18 +7,18 @@ use Redis;
 use App\Simulator;
 
 pcntl_signal(SIGUSR1, function($signo) {
-	echo "Got SIGUSR1\n";
-	PcntlTest::$event = Redis::lpop(PcntlTest::$eventkey);
+	$connection = Redis::connection('pubsub');
+	SimulatorCommand::$event = $connection->lpop(SimulatorCommand::$eventkey);
 });
 
 class SimulatorCommand extends Command
 {
 
 	public static $event = NULL;
-	public static $pid;
-	public static $eventkey;
+	public static $pid = NULL;
+	public static $eventkey = NULL;
 	const SIM_PID_KEY = 'simpid';
-	private $simulator;
+	private static $simulator = NULL;
 
     /**
      * The name and signature of the console command.
@@ -42,10 +42,6 @@ class SimulatorCommand extends Command
     public function __construct()
     {
         parent::__construct();
-	self::$pid = posix_getpid();
-	self::$eventkey = 'process:'.self::$pid.':queue';
-	Redis::set(SIM_PID_KEY, self::$pid);
-	$this->simulator = new Simulator();
     }
 
     /**
@@ -55,26 +51,33 @@ class SimulatorCommand extends Command
      */
     public function handle()
     {
+	self::$pid = posix_getpid();
+	self::$eventkey = 'process:'.self::$pid.':queue';
+	$connection = Redis::connection('pubsub');
+	$connection->set(self::SIM_PID_KEY, self::$pid);
+	self::$simulator = new Simulator();
+
         while (true) {
 		pcntl_signal_dispatch();
 		if (self::$event !== NULL) {
 			$this->handle_signal();
 		}
-		//$this->simulator->step();
-		printf("Step\n");
+		//self::$simulator->step();
+		sleep(1);
+		//printf("%s %s %s\n", self::$pid, self::$);
 	}
     }
 
 	private function handle_signal() {
 
 		//do stuff to handle simulation changes
-		printf("%s\n", self::$event);
 		$event = json_decode(self::$event, true);
 		$action = $event['data']['appActionRequest']['action'];
 		$appId = $event['data']['appActionRequest']['appId'];
 
-		//call_user_func_array(array($this->simulator, "app$action"), 
+		//call_user_func_array(array(self::$simulator, "app$action"), 
 		//	array($appId));
 		printf("Call app$action\n");
+		self::$event = NULL;
 	}
 }

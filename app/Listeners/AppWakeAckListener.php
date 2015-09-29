@@ -6,7 +6,7 @@ use App\Events\AppWakeAckEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AppWakeAckListener extends AppActionAckListener implements ShouldQueue
+class AppWakeAckListener extends AppActionAckListener
 {
     /**
      * Create the event listener.
@@ -24,7 +24,7 @@ class AppWakeAckListener extends AppActionAckListener implements ShouldQueue
      * @param  AppWakeAckEvent  $event
      * @return void
      */
-    public function handle(AppWakeAckEvent $event)
+    public function handle($event)
     {
         //
         printf("AppWakeAckEvent received.\n");

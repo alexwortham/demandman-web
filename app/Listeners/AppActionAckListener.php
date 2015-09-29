@@ -5,11 +5,13 @@ namespace App\Listeners;
 use App\Events\AppActionEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Redis\Database as RedisDatabase;
 use Redis;
 
-class AppActionAckListener implements ShouldQueue
+class AppActionAckListener
 {
 	const SIM_PID_KEY = 'simpid';
+
     /**
      * Create the event listener.
      *
@@ -26,10 +28,11 @@ class AppActionAckListener implements ShouldQueue
      * @param  AppActionEvent  $event
      * @return void
      */
-    public function handle(AppActionAckEvent $event)
+    public function handle($event)
     {
-        $simpid = Redis::get(self::SIM_PID_KEY);
-	Redis::rpush('process:'.$simpid.':queue', $event);
+	$connection = Redis::connection('pubsub');
+        $simpid = $connection->get(self::SIM_PID_KEY);
+	$connection->rpush('process:'.$simpid.':queue', json_encode($event));
 	posix_kill($simpid, SIGUSR1);
     }
 }

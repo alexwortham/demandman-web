@@ -7,6 +7,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Events\StartAppEvent;
+use App\Events\StopAppEvent;
+use App\Events\PauseAppEvent;
+use App\Events\ResumeAppEvent;
+use App\Events\WakeAppEvent;
+use App\Events\AppActionEvent;
 use Event;
 use App\Appliance;
 
@@ -26,7 +31,28 @@ class ApplianceController extends Controller {
   }
 
 	public function start($id) {
-		Event::fire(new StartAppEvent(Appliance::find($id)));
+		$this->fireAppActionEvent(new StartAppEvent(Appliance::find($id)));
+	}
+
+	public function stop($id) {
+		$this->fireAppActionEvent(new StopAppEvent(Appliance::find($id)));
+	}
+
+	public function pause($id) {
+		$this->fireAppActionEvent(new PauseAppEvent(Appliance::find($id)));
+	}
+
+	public function resume($id) {
+		$this->fireAppActionEvent(new ResumeAppEvent(Appliance::find($id)));
+	}
+
+	public function wake($id) {
+		$this->fireAppActionEvent(new WakeAppEvent(Appliance::find($id)));
+	}
+
+	private function fireAppActionEvent(AppActionEvent $event) {
+		$event->makeAppActionRequest();
+		Event::fire($event);
 	}
 
   /**
