@@ -62,9 +62,7 @@ class SimulatorCommand extends Command
 		if (self::$event !== NULL) {
 			$this->handle_signal();
 		}
-		//self::$simulator->step();
-		sleep(1);
-		//printf("%s %s %s\n", self::$pid, self::$);
+		self::$simulator->step();
 	}
     }
 
@@ -72,12 +70,12 @@ class SimulatorCommand extends Command
 
 		//do stuff to handle simulation changes
 		$event = json_decode(self::$event, true);
-		$action = $event['data']['appActionRequest']['action'];
+		$action = ucfirst($event['data']['appActionRequest']['action']);
 		$appId = $event['data']['appActionRequest']['appId'];
 
-		//call_user_func_array(array(self::$simulator, "app$action"), 
-		//	array($appId));
 		printf("Call app$action\n");
+		call_user_func_array(array(self::$simulator, "app$action"), 
+			array($appId));
 		self::$event = NULL;
 	}
 }

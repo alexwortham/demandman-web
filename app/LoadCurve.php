@@ -53,4 +53,8 @@ class LoadCurve extends Model
 		}
 		return $p1[0] > $p2[0];
 	}
+
+	function simulation() {
+		return $this->hasOne('App\Simulation');
+	}
 }

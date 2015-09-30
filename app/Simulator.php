@@ -1,6 +1,8 @@
 <?php
 
 namespace App;
+use App\Appliance;
+use App\LoadMeter;
 
 class Simulator
 {
@@ -10,13 +12,12 @@ class Simulator
 	public $currentStep = 0;
 
 	public function appStart($appId) {
-		$simulation = findSimulation($appId); /* Calls Stub!!! */
+		$simulation = $this->findSimulation($appId);
 		$this->activate($appId, $simulation);
 	}
 
 	public function findSimulation($appId) {
-		/* STUB!!! */
-		return new Simulation();// bad constructor use
+		return Appliance::find($appId)->simulations->first();
 	}
 
 	public function appStop($appId) {
@@ -32,6 +33,7 @@ class Simulator
 	}
 
 	private function activate($appId, Simulation $sim) {
+		$sim->activate();
 		$this->active[$appId] = $sim;
 	}
 
@@ -45,12 +47,12 @@ class Simulator
 	}
 
 	private function putToSleep($appId) {
-		$this->sleeping[$appId] = $this->active[$app];
+		$this->sleeping[$appId] = $this->active[$appId];
 		unset($this->active[$appId]);
 	}
 
 	private function wakeUp($appId) {
-		$this->active[$appId] = $this->sleeping[$app];
+		$this->active[$appId] = $this->sleeping[$appId];
 		unset($this->sleeping[$appId]);
 	}
 
@@ -59,7 +61,7 @@ class Simulator
 			$sim->step();
 		}
 		$this->currentStep++;
-		sleep($stepTime);
+		sleep($this->stepTime);
 	}
 
 	public function reset() {

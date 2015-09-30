@@ -31,4 +31,8 @@ class Appliance extends Model {
 		return $this->hasOne('Sensor');
 	}
 
+	public function simulations() {
+		return $this->hasMany('App\Simulation');
+	}
+
 }
