@@ -14,11 +14,19 @@ use App\Events\WakeAppEvent;
 use App\Events\AppActionEvent;
 use Event;
 use App\Appliance;
+use App\Services\ApplianceApi as Api;
 
 /**
  * 
  */
 class ApplianceController extends Controller {
+
+
+	Api $api;
+
+	public function __construct(Api $api) {
+		$this->api = $api;
+	}
 
   /**
    * Display a listing of the resource.
@@ -31,28 +39,23 @@ class ApplianceController extends Controller {
   }
 
 	public function start($id) {
-		$this->fireAppActionEvent(new StartAppEvent(Appliance::find($id)));
+		$this->api->startAppliance($id);
 	}
 
 	public function stop($id) {
-		$this->fireAppActionEvent(new StopAppEvent(Appliance::find($id)));
+		$this->api->stopAppliance($id);
 	}
 
 	public function pause($id) {
-		$this->fireAppActionEvent(new PauseAppEvent(Appliance::find($id)));
+		$this->api->pauseAppliance($id);
 	}
 
 	public function resume($id) {
-		$this->fireAppActionEvent(new ResumeAppEvent(Appliance::find($id)));
+		$this->api->resumeAppliance($id);
 	}
 
 	public function wake($id) {
-		$this->fireAppActionEvent(new WakeAppEvent(Appliance::find($id)));
-	}
-
-	private function fireAppActionEvent(AppActionEvent $event) {
-		$event->makeAppActionRequest();
-		Event::fire($event);
+		$this->api->wakeAppliance($id);
 	}
 
   /**
