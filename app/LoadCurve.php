@@ -6,6 +6,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\CurveFuncs;
 
 /**
  * Database Model class for LoadCurves.
@@ -27,31 +28,10 @@ class LoadCurve extends Model
 	 * @return double[] An array of point data.
 	 */
 	public function parse_data() {
-		$data_array = array();
 
-		foreach(preg_split("/((\r?\n)|(\r\n?))/", $this->data) as $line){
-			//print  "$line<br />\n";
-			$point_str = explode(",", $line);
-			$data_array[] = array(doubleval(trim($point_str[0])), doubleval(trim($point_str[1])));
-		} 
-
-		usort($data_array, array($this, "cmp_points"));
-
-		return $data_array;
-	}
-
-	/**
-	 * A comparator function for sorting points.
-	 *
-	 * @param double[] $p1 A point array.
-	 * @param double[] $p2 A point array.
-	 * @return int 0 if the points are equal, 1 if `$p1 > $p2`, else 0.
-	 */
-	function cmp_points($p1, $p2) {
-		if ($p1[0] === $p2[0]) {
-			return 0;
-		}
-		return $p1[0] > $p2[0];
+		return CurveFuncs::parse_data(
+				preg_split("/((\r?\n)|(\r\n?))/", $this->data),
+				60);
 	}
 
 	function simulation() {
