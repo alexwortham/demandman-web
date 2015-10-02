@@ -14,26 +14,18 @@ class AppActionEvent extends Event implements ShouldBroadcastNow
 
     public $appliance;
     public $action;
-    public $appActionRequest = NULL;
+    public $appActionRequest;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Appliance $appliance, $action)
+    public function __construct(Appliance $appliance, AppActionRequest $actReq, $action)
     {
         $this->appliance = $appliance;
+	$this->appActionRequest = $actReq;
         $this->action = $action;
-    }
-
-    public function makeAppActionRequest() {
-	if ($this->appActionRequest === NULL) {
-		$this->appActionRequest = new AppActionRequest();
-		$this->appActionRequest->appId = $this->appliance->id;
-		$this->appActionRequest->action = $this->action;
-		$this->appActionRequest->save();
-	}
     }
 
     /**
