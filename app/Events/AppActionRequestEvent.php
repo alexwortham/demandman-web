@@ -8,7 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use App\Appliance;
 
-class AppActionEvent extends Event implements ShouldBroadcastNow
+class AppActionRequestEvent extends Event implements ShouldBroadcastNow
 {
     use SerializesModels;
 
@@ -31,6 +31,7 @@ class AppActionEvent extends Event implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return ['dm.' . $this->actionRequest->requestId() . ".". $this->actionRequest->getAction()];
+        return [sprintf("dm.request.appliance.%d.action.%s", $this->actionRequest->applianceId(),
+		$this->actionRequest->getAction())];
     }
 }

@@ -51,4 +51,11 @@ interface ActionRequest
 	 * @return string The action.
 	 */
 	public function getAction();
+
+	/**
+	 * Get the appliance id.
+	 *
+	 * @return int The appliance id.
+	 */
+	public function applianceId();
 }

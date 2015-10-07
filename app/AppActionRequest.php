@@ -55,4 +55,14 @@ class AppActionRequest extends Model implements ActionRequest
 	public function getAction() {
 		return $this->action;
 	}
+
+	/**
+	 * Get the appliance id.
+	 *
+	 * @return int The appliance id.
+	 */
+	public function applianceId() {
+		return $this->appId;
+	}
+
 }

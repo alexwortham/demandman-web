@@ -6,6 +6,9 @@ use Redis;
 use Illuminate\Console\Command;
 use Event;
 use App\Events\AppStartAckEvent;
+use App\Events\AppActionAckEvent;
+use App\Events\AppActionFinEvent;
+use Symfony\Component\Console\Input\InputArgument;
 use ReflectionClass;
 use Exception;
 
@@ -16,7 +19,7 @@ class RedisSubscribe extends Command
      *
      * @var string
      */
-    protected $signature = 'redis:subscribe';
+    protected $signature = 'redis:subscribe {role}';
 
     /**
      * The console command description.
@@ -46,24 +49,46 @@ class RedisSubscribe extends Command
 	//$connection = Redis::connection('pubsub');
 	//$connection->get('foo');
 	try {
-        Redis::psubscribe(['dm.*'], function($message, $channel) {
-		$chan = explode('.', $channel);
-		$evtType = ucfirst($chan[2]);
-		$evtClass = sprintf("App\\Events\\App%sAckEvent", $evtType);
-		$data = json_decode($message, true)['data'];
-		$event = (new ReflectionClass($evtClass))->newInstanceArgs([$data]);
-            echo "$message $evtClass\n";
-		//Here, use reflection to load event class from the json data.
-		//Just make all events accept associative array and boom, done.
-		try {
-		Event::fire($event);
-		} catch (Exception $e) {
-	    		printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+        	$role = $this->input->getArgument('role');
+		if ($role === "manager") {
+			Redis::psubscribe(['dm.response.*'], function($message, $channel) {
+				$chan = explode('.', $channel);
+				$evtType = ucfirst($chan[5]);
+				$data = json_decode($message, true)['data'];
+				$event = new AppActionFinEvent($data, $message);
+			    echo "$message\n";
+				try {
+					Event::fire($event);
+				} catch (Exception $e) {
+					printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+				}
+			});
+		} else if ($role === "simulator") {
+			Redis::psubscribe(['dm.request.*'], function($message, $channel) {
+				$chan = explode('.', $channel);
+				$evtType = ucfirst($chan[5]);
+				$data = json_decode($message, true)['data'];
+				$event = new AppActionAckEvent($data);
+			    echo "$message\n";
+				try {
+					Event::fire($event);
+				} catch (Exception $e) {
+					printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+				}
+			});
+		} else {
+			printf("Invalid role specified.\n");
 		}
-        });
 	} catch (Exception $e) {
 	    	printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
 	}
+    }
+
+    protected function getArguments()
+    {
+        return [
+            ['role', InputArgument::REQUIRED, 'The role. May be "manager" or "simulator" (without the quotes).'],
+        ];
     }
 }
 

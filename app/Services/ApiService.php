@@ -59,7 +59,7 @@ class ApiService implements ApplianceApi
 	 * Execute request confirmation.
 	 *
 	 * Gets the request from the request store, constructs a response object,
-	 * informs the manager of confirmation, and broadcasts result.
+	 * informs the manager of confirmation.
 	 *
 	 * @param mixed $requestId The request id.
 	 * @param mixed $response The response data.
@@ -70,9 +70,13 @@ class ApiService implements ApplianceApi
 		$request = $this->requestStore->get($requestId);
 		$response = $this->messenger->createResponse($request, $response);
 
-		call_user_func_array(array($this->manager, "confirm$action"), array($request, $response));
+		$result = call_user_func_array(array($this, "doConfirm$action"), array($request, $response));
 
-		$this->messenger->broadcastResponse($response);
+		if ($result === true) {
+			//$this->messenger->hurray();
+		} else {
+			//$this->messenger->booooo();
+		}
 	}
 
 	/**
@@ -149,6 +153,8 @@ class ApiService implements ApplianceApi
 			$request->deny();
 		}
 	}
+
+	private function doConfirmStart
 
 	/**
 	 * @inheritdoc
