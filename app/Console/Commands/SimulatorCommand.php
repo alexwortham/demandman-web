@@ -70,12 +70,16 @@ class SimulatorCommand extends Command
 
 		//do stuff to handle simulation changes
 		$event = json_decode(self::$event, true);
-		$action = ucfirst($event['data']['appActionRequest']['action']);
-		$appId = $event['data']['appActionRequest']['appId'];
+		$action = ucfirst($event['data']['actionRequest']['action']);
+		$appId = $event['data']['actionRequest']['appId'];
 
-		printf("Call app$action\n");
-		call_user_func_array(array(self::$simulator, "app$action"), 
-			array($appId));
-		self::$event = NULL;
+		try {
+			printf("Call app$action(%d)\n", $appId);
+			call_user_func_array(array(self::$simulator, "app$action"), 
+				array($appId));
+			self::$event = NULL;
+		} catch (ErrorException $e) {
+			printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+		}
 	}
 }

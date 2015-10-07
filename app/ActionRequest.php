@@ -44,4 +44,11 @@ interface ActionRequest
 	 * @return void
 	 */
 	public function failed();
+
+	/**
+	 * Get the action.
+	 *
+	 * @return string The action.
+	 */
+	public function getAction();
 }

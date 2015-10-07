@@ -146,6 +146,10 @@ return [
 
 	'Collective\Html\HtmlServiceProvider',
 
+	/*
+	 * Api Service Provider(s)
+	 */
+	App\Providers\ApiServiceProvider::class,
     ],
 
     /*

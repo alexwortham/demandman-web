@@ -32,7 +32,7 @@ class Simulation extends Model
 
 	public function step() {
 		if ($this->currentStep < $this->count) {
-			$this->loadMeter->set_load($simCurve[$this->currentStep]);
+			$this->loadMeter->set_load($this->simCurve[$this->currentStep]);
 			$this->currentStep++;
 		} else if ($this->currentStep === $this->count) {
 			$this->loadMeter->set_load(0);
@@ -57,7 +57,7 @@ class Simulation extends Model
 
 	public function reset() {
 		$this->currentStep = 0;
-		$this->loadMeter->set_load($simCurve[$this->currentStep]);
+		$this->loadMeter->set_load($this->simCurve[$this->currentStep]);
 	}
 
 	public function sleep() {
@@ -65,7 +65,7 @@ class Simulation extends Model
 	}
 
 	public function wakeUp() {
-		$this->loadMeter->set_load($simCurve[$this->currentStep]);
+		$this->loadMeter->set_load($this->simCurve[$this->currentStep]);
 	}
 
 	public function appliance() {

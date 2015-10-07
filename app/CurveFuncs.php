@@ -17,7 +17,7 @@ class CurveFuncs
 	 * @param int[]|double[] $vals An array of numbers for values.
 	 * @return double An average of the values.
 	 */
-	public static function average(&$vals) {
+	public static function average($vals) {
 		$count = count($vals);
 		if ($count == 0) return 0.0;
 		return array_sum($vals) / $count;
@@ -30,7 +30,7 @@ class CurveFuncs
 	 * @param int $dt A delta to average values across.
 	 * @return double[] An array of the averages.
 	 */
-	public static function reduce_curve(&$vals, $dt) {
+	public static function reduce_curve($vals, $dt) {
 		$new_curve = array();
 		$size = count($vals);
 		for ($i = 0; $i < $size; $i += $dt) {
@@ -85,7 +85,7 @@ class CurveFuncs
 	 * @return int[]|double[] An array of the same form as $points where
 	 * the points have been uniformly distributed.
 	 */
-	public static function distribute_curve(&$points, $min, $dt) {
+	public static function distribute_curve($points, $min, $dt) {
 
 		$new_points = array();
 		$min = doubleval($min);
@@ -136,7 +136,7 @@ class CurveFuncs
 	 * @return int[]|double[] An array of the same form as `$points` where
 	 * the points have been scaled as detailed above.
 	 */
-	public static function scale_curve(&$points, $dt, $dv, $max = 1) {
+	public static function scale_curve($points, $dt, $dv, $max = 1) {
 
 		$scaled_curve = array();
 		foreach ($points as $key => $val) {
@@ -183,7 +183,7 @@ class CurveFuncs
 	 * x-values by.
 	 * @return int[]|double[] An array of points as specified above.
 	 */
-	public static function parse_data(&$curve_data, $conv_fact = 1) {
+	public static function parse_data($curve_data, $conv_fact = 1) {
 		$data_array = array();
 
 		foreach($curve_data as $line){
@@ -192,7 +192,7 @@ class CurveFuncs
 			$data_array[] = array(doubleval(trim($point_str[0])) * $conv_fact, doubleval(trim($point_str[1])));
 		} 
 
-		usort($data_array, array(self, "cmp_points"));
+		usort($data_array, array(self::class, "cmp_points"));
 
 		return $data_array;
 	}
@@ -211,7 +211,7 @@ class CurveFuncs
 	 * @param int[]|double[] $points An array of points.
 	 * @return void
 	 */
-	public static function print_curve(&$points) {
+	public static function print_curve($points) {
 
 		foreach ($points as $key => $val) {
 			printf("%f, %f\n", doubleval($key), $val);
@@ -249,7 +249,7 @@ class CurveFuncs
 	 * @return int[]|double[] A new array of points containing the result
 	 * as specified above.
 	 */
-	public static function add_curves(&$curve_1, &$curve_2) {
+	public static function add_curves($curve_1, $curve_2) {
 
 		$new_curve = array();
 		foreach ($curve_1 as $key => $val) {
@@ -288,7 +288,7 @@ class CurveFuncs
 	 * @param int $dt The delta to shift by.
 	 * @return int[]|double[] A new array of points as specified above.
 	 */
-	public static function shift_curve(&$curve, $n, $dt) {
+	public static function shift_curve($curve, $n, $dt) {
 
 		$new_curve = array();
 		foreach ($curve as $key => $val) {

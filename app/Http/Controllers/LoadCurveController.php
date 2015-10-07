@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\LoadCurve;
+use App\CurveFuncs;
 
 /**
  * 
@@ -108,52 +109,6 @@ class LoadCurveController extends Controller
         //
     }
 
-	function average($vals) {
-		$count = count($vals);
-		if ($count == 0) return 0.0;
-		return array_sum($vals) / $count;
-	}
-
-	function get_demand($vals) {
-		$new_curve = array();
-		$dt = 15;
-		$size = count($vals);
-		for ($i = 0; $i < $size; $i += $dt) {
-			$period = array_slice($vals, $i, $dt);
-			$avg = $this->average($period);
-			$new_curve[] = $avg;
-	//		print "$i: $avg " . ($avg * $charge_fact) . "\n";
-		}
-
-	//	foreach ($vals as $key => $val) {
-	//		$new_curve[$key] = $val * $val;
-	//	}
-
-		return $new_curve;
-	}
-    
-
-	public function reduce_curve($curve, $min, $max, $dt) {
-
-		$points = $curve->parse_data();
-		$new_points = array();
-		$min = doubleval($min);
-		$max = doubleval($max);
-		$dt =  doubleval($dt);
-		for ($i = $min; $i <= $max; $i += $dt) {
-			$new_points[strval($i)] = array();
-		}
-
-		$i = 0;
-		foreach ($new_points as $key => $val) {
-			for (; $points[$i][0] < (doubleval($key) + doubleval($dt) / 2) && $i < count($points) - 1; $i++) {
-				$val[] = $points[$i][1];
-			}
-			$new_points[$key] = $this->average($val);
-		}
-
-		return $new_points;
-	}
 /**
      * Display the specified resource.
      *
@@ -166,52 +121,6 @@ class LoadCurveController extends Controller
 	$reduced = $this->reduce_curve($curve, $min, $max, $dt);
         return view('curves/reduce', ['curve' => $curve, 'demand' => $reduced]);
     }
-
-	function print_curve($points) {
-
-		foreach ($points as $key => $val) {
-			printf("(%f, %f)\n", doubleval($key), $val);
-		}
-	}
-
-	function add_curves(&$curve_1, &$curve_2) {
-
-		$new_curve = array();
-		foreach ($curve_1 as $key => $val) {
-			$new_curve[$key] = doubleval($val);
-		}
-
-		foreach ($curve_2 as $key => $val) {
-			if (array_key_exists($key, $new_curve)) {
-				$new_curve[$key] += doubleval($val);
-			} else {
-				$new_curve[$key] = doubleval($val);
-			}
-		}
-
-		return $new_curve;
-	}
-
-	function shift_curve(&$curve, $n, $dt) {
-
-		$new_curve = array();
-		foreach ($curve as $key => $val) {
-			$new_curve[strval(doubleval($key) + $n * $dt)] = $val;
-		}
-
-		return $new_curve;
-	}
-
-	function get_max($vals) {
-		$max = 0;
-		foreach ($vals as $key => $val) {
-			if ($val > $max) {
-				$max = $val;
-			}
-		}
-
-		return $max;
-	}
 
 	public function calculate($c1, $c2, $min, $max, $dt, $dl) {
 		$min_demand = NULL;

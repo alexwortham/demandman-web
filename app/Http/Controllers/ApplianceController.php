@@ -22,7 +22,7 @@ use App\Services\ApplianceApi as Api;
 class ApplianceController extends Controller {
 
 
-	Api $api;
+	protected $api;
 
 	public function __construct(Api $api) {
 		$this->api = $api;

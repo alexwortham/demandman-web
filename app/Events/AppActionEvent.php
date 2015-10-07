@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\Events\Event;
-use App\AppActionRequest;
+use App\ActionRequest;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use App\Appliance;
@@ -12,20 +12,16 @@ class AppActionEvent extends Event implements ShouldBroadcastNow
 {
     use SerializesModels;
 
-    public $appliance;
-    public $action;
-    public $appActionRequest;
+    public $actionRequest;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Appliance $appliance, AppActionRequest $actReq, $action)
+    public function __construct(ActionRequest $actReq)
     {
-        $this->appliance = $appliance;
-	$this->appActionRequest = $actReq;
-        $this->action = $action;
+	$this->actionRequest = $actReq;
     }
 
     /**
@@ -35,6 +31,6 @@ class AppActionEvent extends Event implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return ['dm.' . $this->appliance->id . ".". $this->action];
+        return ['dm.' . $this->actionRequest->requestId() . ".". $this->actionRequest->getAction()];
     }
 }

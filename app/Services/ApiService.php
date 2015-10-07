@@ -18,7 +18,7 @@ use App\Appliance;
  * logic for the main API. Its extensive use of injected interfaces should 
  * make it easy to swap code in and out and make it easy to test.
  */
-class ControllerService implements ApplianceApi
+class ApiService implements ApplianceApi
 {
 	protected $manager;
 	protected $messenger;
@@ -52,7 +52,7 @@ class ControllerService implements ApplianceApi
 
 		call_user_func_array(array($this, "do$action"), array($appliance, $actionRequest));
 
-		$this->messenger->broadcastRequest($request);
+		$this->messenger->broadcastRequest($actionRequest);
 	}
 
 	/**
@@ -84,9 +84,9 @@ class ControllerService implements ApplianceApi
 	 */
 	private function doStart(Appliance $appliance, ActionRequest $request) {
 		if ($this->manager->startAppliance($request)) {
-			$actionRequest->approve();
+			$request->approve();
 		} else {
-			$actionRequest->deny();
+			$request->deny();
 		}
 	}
 
@@ -99,9 +99,9 @@ class ControllerService implements ApplianceApi
 	 */
 	private function doStop(Appliance $appliance, ActionRequest $request) {
 		if ($this->manager->stopAppliance($request)) {
-			$actionRequest->approve();
+			$request->approve();
 		} else {
-			$actionRequest->deny();
+			$request->deny();
 		}
 	}
 
@@ -114,9 +114,9 @@ class ControllerService implements ApplianceApi
 	 */
 	private function doPause(Appliance $appliance, ActionRequest $request) {
 		if ($this->manager->pauseAppliance($request)) {
-			$actionRequest->approve();
+			$request->approve();
 		} else {
-			$actionRequest->deny();
+			$request->deny();
 		}
 	}
 
@@ -129,9 +129,9 @@ class ControllerService implements ApplianceApi
 	 */
 	private function doResume(Appliance $appliance, ActionRequest $request) {
 		if ($this->manager->resumeAppliance($request)) {
-			$actionRequest->approve();
+			$request->approve();
 		} else {
-			$actionRequest->deny();
+			$request->deny();
 		}
 	}
 
@@ -144,9 +144,9 @@ class ControllerService implements ApplianceApi
 	 */
 	private function doWake(Appliance $appliance, ActionRequest $request) {
 		if ($this->manager->wakeAppliance($request)) {
-			$actionRequest->approve();
+			$request->approve();
 		} else {
-			$actionRequest->deny();
+			$request->deny();
 		}
 	}
 

@@ -6,3 +6,4 @@ Homestead.json
 storage/
 *.csv
 public/docs/
+*.swp
