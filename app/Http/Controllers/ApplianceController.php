@@ -72,7 +72,7 @@ class ApplianceController extends Controller {
 		if ($timed_out) {
 			return response()->json(['error' => ["type" => "timeout", "message" => "Operation timed out"]]);
 		} else {
-			return response(sprintf("{\"data\": %s}", $foo))->header('Content-Type', 'application/json');
+			return response($foo)->header('Content-Type', 'application/json');
 		}
 	}
 
