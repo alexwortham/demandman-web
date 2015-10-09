@@ -77,6 +77,8 @@ class ApiService implements ApplianceApi
 		} else {
 			//$this->messenger->booooo();
 		}
+
+		$this->messenger->broadcastComplete($request, $response);
 	}
 
 	/**

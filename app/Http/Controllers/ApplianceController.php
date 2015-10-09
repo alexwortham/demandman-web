@@ -16,6 +16,7 @@ use Event;
 use App\Appliance;
 use App\Services\ApplianceApi as Api;
 use App\Services\ApiMessenger;
+use Predis\Connection\ConnectionException;
 use Redis;
 
 /**
@@ -43,18 +44,36 @@ class ApplianceController extends Controller {
   }
 
 	public function start($id) {
-		$this->api->startAppliance($id);
-		$status = "idk";
-		Redis::subscribe(["dm.response.appliance.1.action.Start"], function ($message) {
-			$status = $message;
-			printf($message);
-			Redis::unsubscribe(["dm.response.appliance.1.action.Start"]);
-			return;
-			$resp = $this->messenger->decodeResponse($message);
-			$status = $resp['status'];
-		});
-
-		return $status;
+		$foo = "idk";
+		$chan = "idk";
+		$kind = "idk";
+		//get a client that has a timeout of 10 seconds.
+		$redis = Redis::connection("pubsubconsumer");
+		$pubsub = $redis->pubSubLoop();
+		$pubsub->subscribe("dm.complete.appliance.1.action.Start");
+		$timed_out = true;
+		try {
+			foreach ($pubsub as $message) {
+				$chan = $message->channel;
+				$foo = $message->payload;
+				$kind = $message->kind;
+				if ($message->kind === 'subscribe') {
+					$this->api->startAppliance($id);
+				}
+				if ($message->kind === 'message') {
+					$timed_out = false;
+					break;
+				}
+			}
+		} catch (ConnectionException $e) {
+			//we timed out.
+		}
+		unset($pubsub);
+		if ($timed_out) {
+			return response()->json(['error' => ["type" => "timeout", "message" => "Operation timed out"]]);
+		} else {
+			return response(sprintf("{\"data\": %s}", $foo))->header('Content-Type', 'application/json');
+		}
 	}
 
 	public function stop($id) {

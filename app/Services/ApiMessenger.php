@@ -8,6 +8,8 @@ namespace App\Services;
 use App\Appliance;
 use App\ActionRequest;
 use App\AppActionRequest;
+use App\ActionResponse;
+use App\AppActionResponse;
 
 /**
  * Defines the message handling for the API.
@@ -46,6 +48,9 @@ interface ApiMessenger
 	 * @return App\ActionRequest The decoded ActionRequest object.
 	 */
 	public function decodeRequest($request);
+
+
+	public function broadcastComplete(ActionRequest $request, AppActionResponse $response);
 
 	/**
 	 * Broadcast an ActionResponse to subscribers.

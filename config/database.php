@@ -136,6 +136,12 @@ return [
 	    'read_write_timeout' => -1,
         ],
 
+	'pubsubconsumer' => [
+            'host'     => '127.0.0.1',
+            'port'     => 6379,
+            'database' => 2,
+	    'read_write_timeout' => 10,
+        ],
     ],
 
 ];

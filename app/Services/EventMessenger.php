@@ -7,11 +7,14 @@ namespace App\Services;
 
 use App\Appliance;
 use App\ActionRequest;
+use App\ActionResponse;
 use App\AppActionRequest;
 use App\AppActionResponse;
 use App\Events\AppActionRequestEvent;
+use App\Events\AppActionResponseEvent;
 
 use Event;
+use Redis;
 
 /**
  * Defines the message handling for the API.
@@ -60,6 +63,13 @@ class EventMessenger implements ApiMessenger
 	 * @return App\ActionRequest The decoded ActionRequest object.
 	 */
 	public function decodeRequest($request) {
+	}
+
+	public function broadcastComplete(ActionRequest $request, AppActionResponse $response) {
+		$data = json_encode(array("status" => $response->status, "appId" => $response->appId, "action" => $response->action, "requestId" => $request->id));
+		printf("%s\n", $data);
+		$redis = Redis::connection("pubsub");
+		$redis->publish("dm.complete.appliance.1.action.Start", $data);
 	}
 
 	/**
