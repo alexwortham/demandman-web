@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Redis;
 use App\Simulator;
+use Event;
+use App\Events\AppActionResponseEvent;
 
 pcntl_signal(SIGUSR1, function($signo) {
 	$connection = Redis::connection('pubsub');
@@ -72,14 +74,19 @@ class SimulatorCommand extends Command
 		$event = json_decode(self::$event, true);
 		$action = ucfirst($event['data']['actionRequest']['action']);
 		$appId = $event['data']['actionRequest']['appId'];
+		$reqId = $event['data']['actionRequest']['id'];
 
 		try {
 			printf("Call app$action(%d)\n", $appId);
 			call_user_func_array(array(self::$simulator, "app$action"), 
 				array($appId));
+			$response = array("status" => "successful", "appId" => $appId, "action" => $action, "requestId" => $reqId);
+			Event::fire(new AppActionResponseEvent($response));
 			self::$event = NULL;
 		} catch (ErrorException $e) {
 			printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+			$response = array("status" => "failed", "appId" => $appId, "action" => $action, "requestId" => $reqId);
+			Event::fire(new AppActionResponseEvent($response));
 		}
 	}
 }

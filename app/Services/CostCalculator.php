@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-interface CostCaculator
+interface CostCalculator
 {
 	public function demandCost(array $curves);
 

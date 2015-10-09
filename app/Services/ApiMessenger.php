@@ -45,7 +45,7 @@ interface ApiMessenger
 	 * @param string $request The request string to decode.
 	 * @return App\ActionRequest The decoded ActionRequest object.
 	 */
-	public function decodeRequest(string $request);
+	public function decodeRequest($request);
 
 	/**
 	 * Broadcast an ActionResponse to subscribers.
@@ -77,5 +77,5 @@ interface ApiMessenger
 	 * @param string $response The response string to decode.
 	 * @return App\ActionResponse The decoded ActionResponse object.
 	 */
-	public function decodeResponse(string $response);
+	public function decodeResponse($response);
 }

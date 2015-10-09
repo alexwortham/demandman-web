@@ -15,6 +15,8 @@ use App\Events\AppActionEvent;
 use Event;
 use App\Appliance;
 use App\Services\ApplianceApi as Api;
+use App\Services\ApiMessenger;
+use Redis;
 
 /**
  * 
@@ -23,9 +25,11 @@ class ApplianceController extends Controller {
 
 
 	protected $api;
+	protected $messenger;
 
-	public function __construct(Api $api) {
+	public function __construct(Api $api, ApiMessenger $messenger) {
 		$this->api = $api;
+		$this->messenger = $messenger;
 	}
 
   /**
@@ -40,6 +44,17 @@ class ApplianceController extends Controller {
 
 	public function start($id) {
 		$this->api->startAppliance($id);
+		$status = "idk";
+		Redis::subscribe(["dm.response.appliance.1.action.Start"], function ($message) {
+			$status = $message;
+			printf($message);
+			Redis::unsubscribe(["dm.response.appliance.1.action.Start"]);
+			return;
+			$resp = $this->messenger->decodeResponse($message);
+			$status = $resp['status'];
+		});
+
+		return $status;
 	}
 
 	public function stop($id) {

@@ -9,6 +9,10 @@ namespace App\Services;
 
 use App\ActionRequest;
 use App\ActionResponse;
+use App\Services\Analyzer;
+use App\Services\CostCalculator;
+use App\Services\Predictor;
+use App\Services\ApiMessenger;
 
 /**
  * Decides if appliances are allowed to run.
@@ -37,13 +41,14 @@ class DemandManager implements Manager
 
 	public function startAppliance(ActionRequest $request) {
 		$appliance = $this->applianceStore->get($request->applianceId());
-		$predicted_curve = $this->predictor->predictNowWithCurrentLoad($appliance);
-		$cost = $this->costCalculator->demandCost([$predicted_curve]);
-		if ($cost > $this->getMaxAllowableCost()) {
-			return false;
-		} else {
-			return true;
-		}
+//		$predicted_curve = $this->predictor->predictNowWithCurrentLoad($appliance);
+//		$cost = $this->costCalculator->demandCost([$predicted_curve]);
+//		if ($cost > $this->getMaxAllowableCost()) {
+//			return false;
+//		} else {
+//			return true;
+//		}
+		return true;
 	}
 
 	public function stopAppliance(ActionRequest $request) {

@@ -19,9 +19,9 @@ class AppActionResponseEvent extends Event implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct(ActionResponse $actRes)
+    public function __construct($data)
     {
-	$this->actionResponse = $actRes;
+	$this->actionResponse = $data;
     }
 
     /**
@@ -31,7 +31,7 @@ class AppActionResponseEvent extends Event implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return [sprintf("dm.response.appliance.%d.action.%s", $this->actionResponse->applianceId(),
-		$this->actionResponse->getAction())];
+        return [sprintf("dm.response.appliance.%d.action.%s", $this->actionResponse['appId'],
+		$this->actionResponse['action'])];
     }
 }

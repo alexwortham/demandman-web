@@ -8,6 +8,7 @@ namespace App\Services;
 use App\Appliance;
 use App\ActionRequest;
 use App\AppActionRequest;
+use App\AppActionResponse;
 use App\Events\AppActionRequestEvent;
 
 use Event;
@@ -58,7 +59,7 @@ class EventMessenger implements ApiMessenger
 	 * @param string $request The request string to decode.
 	 * @return App\ActionRequest The decoded ActionRequest object.
 	 */
-	public function decodeRequest(string $request) {
+	public function decodeRequest($request) {
 	}
 
 	/**
@@ -68,6 +69,7 @@ class EventMessenger implements ApiMessenger
 	 * @return void
 	 */
 	public function broadcastResponse(ActionResponse $response) {
+		Event::fire(new AppActionResponseEvent($response));
 	}
 
 	/**
@@ -79,7 +81,7 @@ class EventMessenger implements ApiMessenger
 	 */
 	public function createResponse(ActionRequest $request, $response) {
 		$actionResponse = new AppActionResponse();
-		$actionResponse->appId = $app->id;
+		$actionResponse->appId = $request->appId;
 		$actionResponse->action = $request->getAction();
 		$actionResponse->request = $request;
 		$data = $this->decodeResponse($response);
@@ -104,7 +106,7 @@ class EventMessenger implements ApiMessenger
 	 * @param string $response The response string to decode.
 	 * @return App\ActionResponse The decoded ActionResponse object.
 	 */
-	public function decodeResponse(string $response) {
-		return json_decode($response, true)['data'];
+	public function decodeResponse($response) {
+		return json_decode($response, true)['data']['actionResponse'];
 	}
 }

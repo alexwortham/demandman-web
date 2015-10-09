@@ -30,10 +30,9 @@ class AppActionFinListener
      */
     public function handle($event)
     {
-	$responseData = $event->data['actionResponse'];
 	$responseMessage = $event->message;
-	$action = ucfirst($reponseData['action']);
+	$action = ucfirst($event->data['actionResponse']['action']);
 	call_user_func_array(array($this->api, "confirm$action"),
-		array($responseData['requestId'], $responseMessage));
+		array($event->data['actionResponse']['requestId'], $responseMessage));
     }
 }

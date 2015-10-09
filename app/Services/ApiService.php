@@ -70,9 +70,9 @@ class ApiService implements ApplianceApi
 		$request = $this->requestStore->get($requestId);
 		$response = $this->messenger->createResponse($request, $response);
 
-		$result = call_user_func_array(array($this, "doConfirm$action"), array($request, $response));
+		//$result = call_user_func_array(array($this, "doConfirm$action"), array($request, $response));
 
-		if ($result === true) {
+		if (true) {
 			//$this->messenger->hurray();
 		} else {
 			//$this->messenger->booooo();
@@ -154,8 +154,6 @@ class ApiService implements ApplianceApi
 		}
 	}
 
-	private function doConfirmStart
-
 	/**
 	 * @inheritdoc
 	 */
@@ -195,34 +193,34 @@ class ApiService implements ApplianceApi
 	 * @inheritdoc
 	 */
 	public function confirmStart($requestId, $response) {
-		$this->doConfirm($requestId, $reponse, 'Start');
+		$this->doConfirm($requestId, $response, 'Start');
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function confirmStop($requestId, $response) {
-		$this->doConfirm($requestId, $reponse, 'Stop');
+		$this->doConfirm($requestId, $response, 'Stop');
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function confirmPause($requestId, $response) {
-		$this->doConfirm($requestId, $reponse, 'Pause');
+		$this->doConfirm($requestId, $response, 'Pause');
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function confirmResume($requestId, $response) {
-		$this->doConfirm($requestId, $reponse, 'Resume');
+		$this->doConfirm($requestId, $response, 'Resume');
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function confirmWake($requestId, $response) {
-		$this->doConfirm($requestId, $reponse, 'Wake');
+		$this->doConfirm($requestId, $response, 'Wake');
 	}
 }
