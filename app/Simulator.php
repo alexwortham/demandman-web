@@ -48,17 +48,19 @@ class Simulator
 
 	private function putToSleep($appId) {
 		$this->sleeping[$appId] = $this->active[$appId];
-		unset($this->active[$appId]);
+		$this->active[$appId] = null;
 	}
 
 	private function wakeUp($appId) {
 		$this->active[$appId] = $this->sleeping[$appId];
-		unset($this->sleeping[$appId]);
+		$this->sleeping[$appId] = null;
 	}
 
 	public function step() {
 		foreach ($this->active as $appId => $sim) {
-			$sim->step();
+			if ($sim !== null) {
+				$sim->step();
+			}
 		}
 		$this->currentStep++;
 		sleep($this->stepTime);
@@ -66,10 +68,14 @@ class Simulator
 
 	public function reset() {
 		foreach ($this->active as $appId => $sim) {
-			$sim->reset();
+			if ($sim !== null) {
+				$sim->reset();
+			}
 		}
 		foreach ($this->sleeping as $appId => $sim) {
-			$sim->reset();
+			if ($sim !== null) {
+				$sim->reset();
+			}
 		}
 		$this->currentStep = 0;
 	}

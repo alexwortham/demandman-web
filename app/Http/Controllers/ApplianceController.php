@@ -44,21 +44,70 @@ class ApplianceController extends Controller {
   }
 
 	public function start($id) {
-		$foo = "idk";
-		$chan = "idk";
-		$kind = "idk";
-		//get a client that has a timeout of 10 seconds.
+		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Start",
+			function () use ($id) {
+				$this->api->startAppliance($id);
+			});
+		return $this->respondJsonOrTimeout($message);
+	}
+
+	public function stop($id) {
+		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Stop",
+			function () use ($id) {
+				$this->api->stopAppliance($id);
+			});
+		return $this->respondJsonOrTimeout($message);
+	}
+
+	public function pause($id) {
+		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Pause",
+			function () use ($id) {
+				$this->api->pauseAppliance($id);
+			});
+		return $this->respondJsonOrTimeout($message);
+	}
+
+	public function resume($id) {
+		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Resume",
+			function () use ($id) {
+				$this->api->resumeAppliance($id);
+			});
+		return $this->respondJsonOrTimeout($message);
+	}
+
+	public function wake($id) {
+		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Wake",
+			function () use ($id) {
+				$this->api->wakeAppliance($id);
+			});
+		return $this->respondJsonOrTimeout($message);
+	}
+
+	private function respondJsonOrTimeout($json) {
+		if ($json === false) {
+			return response()->json(['error' => ["type" => "timeout", "message" => "Operation timed out"]]);
+		} else {
+			return response($json)->header('Content-Type', 'application/json');
+		}
+	}
+
+	private function subscribeAndWait($channel, $callable = null) {
 		$redis = Redis::connection("pubsubconsumer");
 		$pubsub = $redis->pubSubLoop();
-		$pubsub->subscribe("dm.complete.appliance.1.action.Start");
+		$pubsub->subscribe($channel);
 		$timed_out = true;
+		$chan = null;
+		$msg = null;
+		$kind = null;
 		try {
 			foreach ($pubsub as $message) {
 				$chan = $message->channel;
-				$foo = $message->payload;
+				$msg = $message->payload;
 				$kind = $message->kind;
 				if ($message->kind === 'subscribe') {
-					$this->api->startAppliance($id);
+					if ($callable !== null) {
+						call_user_func($callable);
+					}
 				}
 				if ($message->kind === 'message') {
 					$timed_out = false;
@@ -66,30 +115,15 @@ class ApplianceController extends Controller {
 				}
 			}
 		} catch (ConnectionException $e) {
-			//we timed out.
+			
 		}
+		$pubsub->unsubscribe();
 		unset($pubsub);
-		if ($timed_out) {
-			return response()->json(['error' => ["type" => "timeout", "message" => "Operation timed out"]]);
+		if ($timed_out === true) {
+			return false;
 		} else {
-			return response($foo)->header('Content-Type', 'application/json');
+			return $msg;
 		}
-	}
-
-	public function stop($id) {
-		$this->api->stopAppliance($id);
-	}
-
-	public function pause($id) {
-		$this->api->pauseAppliance($id);
-	}
-
-	public function resume($id) {
-		$this->api->resumeAppliance($id);
-	}
-
-	public function wake($id) {
-		$this->api->wakeAppliance($id);
 	}
 
   /**

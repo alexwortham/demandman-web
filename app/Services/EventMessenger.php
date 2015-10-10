@@ -66,13 +66,15 @@ class EventMessenger implements ApiMessenger
 	}
 
 	public function broadcastComplete(ActionRequest $request, AppActionResponse $response) {
+		$appId = $response->appId;
+		$action = $response->action;
 		$data = json_encode([ "data" => [ "actionComplete" => [
 			"status" => $response->status,
-			"appId" => $response->appId,
-			"action" => $response->action,
+			"appId" => $appId,
+			"action" => $action,
 			"requestId" => $request->id]]]);
 		$redis = Redis::connection("pubsub");
-		$redis->publish("dm.complete.appliance.1.action.Start", $data);
+		$redis->publish("dm.complete.appliance.$appId.action.$action", $data);
 	}
 
 	/**
