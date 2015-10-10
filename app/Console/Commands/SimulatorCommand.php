@@ -41,9 +41,10 @@ class SimulatorCommand extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Simulator $simulator)
     {
         parent::__construct();
+	self::$simulator = $simulator;
     }
 
     /**
@@ -57,7 +58,6 @@ class SimulatorCommand extends Command
 	self::$eventkey = 'process:'.self::$pid.':queue';
 	$connection = Redis::connection('pubsub');
 	$connection->set(self::SIM_PID_KEY, self::$pid);
-	self::$simulator = new Simulator();
 
         while (true) {
 		pcntl_signal_dispatch();

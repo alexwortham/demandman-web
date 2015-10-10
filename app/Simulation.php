@@ -34,10 +34,14 @@ class Simulation extends Model
 		if ($this->currentStep < $this->count) {
 			$this->loadMeter->set_load($this->simCurve[$this->currentStep]);
 			$this->currentStep++;
+			return true;
 		} else if ($this->currentStep === $this->count) {
 			$this->loadMeter->set_load(0);
 			$this->currentStep++;
+			return false;
 		}
+
+		return false;
 	}
 
 	private function get_sim_curve() {

@@ -3,6 +3,7 @@
 namespace App;
 use App\Appliance;
 use App\LoadMeter;
+use App\Services\ApplianceApi as Api;
 
 class Simulator
 {
@@ -10,6 +11,11 @@ class Simulator
 	private $sleeping = [];
 	public $stepTime = 1;
 	public $currentStep = 0;
+	protected $api;
+
+	public function __construct(Api $api) {
+		$this->api = $api;
+	}
 
 	public function appStart($appId) {
 		$simulation = $this->findSimulation($appId);
@@ -59,7 +65,9 @@ class Simulator
 	public function step() {
 		foreach ($this->active as $appId => $sim) {
 			if ($sim !== null) {
-				$sim->step();
+				if ($sim->step() === false) {
+					$this->api->stopAppliance($appId);
+				}
 			}
 		}
 		$this->currentStep++;
