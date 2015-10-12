@@ -10,6 +10,9 @@ use App\CurveFuncs;
 
 /**
  * Database Model class for LoadCurves.
+ *
+ * @property string $name A name for this LoadCurve.
+ * @property string $data The data for this curve in CSV format.
  */
 class LoadCurve extends Model
 {
@@ -36,5 +39,9 @@ class LoadCurve extends Model
 
 	function simulation() {
 		return $this->hasOne('App\Simulation');
+	}
+
+	function run() {
+		return $this->hasOne('App\Run');
 	}
 }

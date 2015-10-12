@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Model class for individual appliance simulations.
+ */
 namespace App;
 
 use App\LoadMeter;
@@ -8,14 +11,20 @@ use App\LoadCurve;
 use App\CurveFuncs;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model class for individual appliance simulations.
+ *
+ * @property int $bus The I2C bus number to which the simulation device is attached.
+ * @property int $addr The I2C address of the simulation device.
+ * @property int $min The minimum value of the simulation device.
+ * @property int $max The maximum value of the simulation device.
+ */
 class Simulation extends Model
 {
 	public $currentStep = 0;
 	private $count;
 	private $loadMeter;
 	private $simCurve;
-	/* protected $appliance; */
-	/* protected $loadCurve; */
 
 	public function __construct() {
 	}

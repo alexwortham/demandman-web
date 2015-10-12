@@ -36,5 +36,6 @@ class ApiServiceProvider extends ServiceProvider
 	$this->app->bind('App\Services\Predictor', 'App\Services\CapturedDataPredictor');
 	$this->app->bind('App\Services\Analyzer', 'App\Services\BasicAnalyzer');
 	$this->app->bind('App\Services\CostCalculator', 'App\Services\BasicCostCalculator');
+	$this->app->bind('App\Services\Meter', 'App\Services\MeterService');
     }
 }
