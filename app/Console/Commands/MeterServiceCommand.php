@@ -60,11 +60,6 @@ class MeterServiceCommand extends Command
 		        echo "meter received message: $message\n";
 			call_user_func_array([$this->meter, "app$evtType"],
 				[$response['appId']]);
-			try {
-				Event::fire($event);
-			} catch (Exception $e) {
-				printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
-			}
 		});
 	} catch (Exception $e) {
 	    	printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());

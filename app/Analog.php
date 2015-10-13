@@ -64,4 +64,17 @@ class Analog
 		$this->open_ain_if_not_open();
 		return adc_read_value($this->ain);
 	}
+
+	/**
+	 * Read a raw value from the AIN device.
+	 * 
+	 * Read a raw value from the AIN device specified by $ain.
+	 * This will be a value between 0 and 1800. (milliVolts)
+	 *
+	 * @return double|string A value between 0 and 1800 or an error string.
+	 */
+	public function read_raw() {
+		$this->open_ain_if_not_open();
+		return adc_read_raw($this->ain);
+	}
 }

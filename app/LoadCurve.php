@@ -37,6 +37,30 @@ class LoadCurve extends Model
 				60);
 	}
 
+	/**
+	 * Drop all values after `$time` from the data.
+	 *
+	 * Thus giving you all data after `$time`.
+	 *
+	 * @param double|int $time The point after which all data is kept.
+	 * @return App\LoadCurve A new LoadCurve containing only data after `$time`.
+	 */
+	public function dataAfter($time) {
+
+	}
+
+	public function appendToData($time, $watts) {
+
+	}
+
+	public function addToData($time, $watts) {
+
+	}
+
+	public function getDataAt($time) {
+
+	}
+
 	function simulation() {
 		return $this->hasOne('App\Simulation');
 	}

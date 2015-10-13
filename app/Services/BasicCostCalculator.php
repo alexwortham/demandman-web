@@ -1,12 +1,62 @@
 <?php
 
+/**
+ * An implementation of the CostCalculator interface.
+ */
 namespace App\Services;
 
+use App\LoadCurve;
+
+/**
+ * An implementation of the CostCalculator interface.
+ */
 class BasicCostCalculator implements CostCalculator
 {
-	public function demandCost(array $curves) {
+	/**
+	 * @inheritdoc
+	 */
+	public function demandCost(LoadCurve $curve) {
 	}
 
-	public function usageCost(array $curves) {
+	/**
+	 * @inheritdoc
+	 */
+	public function usageCost(LoadCurve $curve) {
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function currentBillDemandCost() {
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function currentBillUsageCost() {
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function currentBillTotalCost() {
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function costPerKiloWatt() {
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function costPerKiloWattHour() {
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function demandDeltaSeconds() {
 	}
 }
