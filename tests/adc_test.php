@@ -16,7 +16,7 @@
 	$start = microtime(true);
 	for ($i = 0; $i < $argv[1] * 1000000; $i += $argv[2]) {
 		$val = array(strval(microtime(true)), $analog->read() * 1800);
-		printf("%.6f Value: %s\n", doubleval($val[0]), $val[1]);
+		printf("%.6f, %.6f\n", doubleval($val[0]), doubleval($val[1]));
 		usleep($argv[2]);
 	}
 	$end = microtime(true);
