@@ -6,21 +6,23 @@
 	use App\LoadMeter;
 
 	$analog = new Analog(0);
-	//$meter = new LoadMeter("Fun meter", 0, 0, 0, 6);
 	$vals = array();
 
+	if (count($argv) < 3) {
+		fprintf(STDERR, "usage: adc_test.php [run time in seconds] [delay between reads in microseconds]\n");
+		exit();
+	}
+
 	$start = microtime(true);
-	for ($i = 0; $i < 120; $i++) {
-		//$meter->set_load( $analog->read() );
+	for ($i = 0; $i < $argv[1] * 1000000; $i += $argv[2]) {
 		$val = array(strval(microtime(true)), $analog->read() * 1800);
-		//$val = array(strval(microtime(true)), $meter->get_load());
 		printf("%.6f Value: %s\n", doubleval($val[0]), $val[1]);
-		sleep(1);
+		usleep($argv[2]);
 	}
 	$end = microtime(true);
 	$dt = $end - $start;
-	printf("Time to execute %.6f\n", $dt);
-	printf("Average sample rate %.6f\n", $dt / 120);
+	fprintf(STDERR, "Time to execute %.6f\n", $dt);
+	fprintf(STDERR, "Average sample rate %.6f\n", $dt / $argv[1] * 1000000 / $argv[2]);
 
 
 ?>
