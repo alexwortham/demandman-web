@@ -5,8 +5,11 @@
  */
 namespace App\Services;
 
+use App\AnalogCurrentMonitor;
+use App\LoadCurve;
 use App\Services\CostCalculator;
 use App\DemandHistory;
+use App\Run;
 
 /**
  * An implementation of the Meter service interface.
@@ -22,14 +25,14 @@ class MeterService implements Meter
 	 *
 	 * Indexed by `$currentMonitor->appliance->id`.
 	 * 
-	 * @var App\CurrentMonitor[] $activeMonitors The active current monitors
+	 * @var \App\CurrentMonitor[] $activeMonitors The active current monitors
 	 */
 	private $activeMonitors;
 
-	/** @var App\LoadCurve $aggregate The current aggregate curve */
+	/** @var \App\LoadCurve $aggregate The current aggregate curve */
 	private $aggregate;
 
-	/** @var App\LoadCurve[] $curves An array of LoadCurves indexed by `$appliance->id` */
+	/** @var \App\LoadCurve[] $curves An array of LoadCurves indexed by `$appliance->id` */
 	private $curves;
 
 	/** @var int $time The current time on which measurements are synchronized */
@@ -45,16 +48,22 @@ class MeterService implements Meter
 	 * @inheritdoc
 	 */
 	public function appStart($appId) {
-		//get current monitor from database and call setup()
-		//put it in $activeMonitors and create a new LoadCurve
-		//put the curve in $curves and return
+		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId);
+		$currentMonitor->setup();
+		$this->activeMonitors[$appId] = $currentMonitor;
+		$curve = Run::where('appliance_id', $appId)
+			->and('is_running', true)->first()->loadCurve;
+		$this->curves[$appId] = $curve;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function appStop($appId) {
-		//call $curve->save(), remove monitor from active monitors
+		$curve = $this->curves[$appId];
+		$curve->serialize_data();
+		$curve->save();
+		unset($this->activeMonitors[$appId]);
 	}
 
 	/**
@@ -67,25 +76,26 @@ class MeterService implements Meter
 	public function measure() {
 		foreach ($this->activeMonitors as $appId => $monitor) {
 			$watts = $monitor->getWatts();
-			($this->curves[$appId])->appendToData($this->time, $watts);
+			$curve = $this->curves[$appId];
+			$curve->addToData($this->time, $watts);
 			$this->aggregate->addToData($this->time, $watts);
 		}
 	}
 
 	public function meterLoop() {
 		if ($this->demandHistory === null) {
-			$this->demandHistory = new DemandHistory();
+			$this->demandHistory = new DemandHistory($this->calculator);
 			$this->demandHistory->start();
 		}
 		while ($this->meterWait()) {
 			$this->measure();
 			$agg_watts = $this->aggregate->getDataAt($this->time);
-			if ( ! $this->demandHistory->updateHistory($agg_watts) ) {
+			if ( ! $this->demandHistory->updateHistory($this->time, $agg_watts) ) {
 				$this->demandHistory->complete();
 				$this->demandHistory->save();
-				$this->demandHistory = new DemandHistory();
+				$this->demandHistory = new DemandHistory($this->calculator);
 				$this->demandHistory->start();
-				$this->demandHistory->updateHistory($agg_watts);
+				$this->demandHistory->updateHistory($this->time, $agg_watts);
 			}
 		}
 	}

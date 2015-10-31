@@ -54,4 +54,6 @@ interface CostCalculator
 	public function costPerKiloWattHour();
 
 	public function demandDeltaSeconds();
+
+	public function demandDeltaMinutes();
 }

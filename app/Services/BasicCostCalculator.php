@@ -59,4 +59,10 @@ class BasicCostCalculator implements CostCalculator
 	 */
 	public function demandDeltaSeconds() {
 	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function demandDeltaMinutes() {
+	}
 }

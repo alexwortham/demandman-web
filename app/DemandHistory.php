@@ -10,6 +10,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Services\CostCalculator;
+use Carbon\Carbon;
 
 /**
  * A model class for storing a history of demand windows.
@@ -17,8 +18,8 @@ use App\Services\CostCalculator;
  * Where a demand window is the averaging period for demand
  * charges.
  *
- * @property \DateTime $start_time The time the period started.
- * @property \DateTime $end_time The time the period ended.
+ * @property \Carbon\Carbon $start_time The time the period started.
+ * @property \Carbon\Carbon $end_time The time the period ended.
  * @property double $watts The average of the demand in watts for this period.
  * @property double $watt_hours The watt hours used in this period.
  * @property double $demand_charge The calculated demand charge for this period.
@@ -31,19 +32,38 @@ class DemandHistory extends Model
 	public $costPerKwHr;
 	public $costPerKw;
 	public $demandDeltaSecs;
+	public $demandDeltaMins;
 	public $wattHrSum;
 
+	/**
+	 * Create a DemandHistory object using the given CostCalculator.
+	 *
+	 * @param \App\Services\CostCalculator $calculator The calculator object.
+	 */
 	public function __construct(CostCalculator $calculator) {
+		parent::__construct();
 		$this->calculator = $calculator;
 		$this->costPerKwHr = $calculator->costPerKiloWattHour();
 		$this->costPerKw = $calculator->costPerKiloWatt();
 		$this->demandDeltaSecs = $calculator->demandDeltaSeconds();
+		$this->demandDeltaMins = $calculator->demandDeltaMinutes();
 		$this->sum = 0;
 		$this->wattHrSum = 0;
 	}
 
+	/**
+	 * Update this DemandHistory with the given values.
+	 *
+	 * The function returns false if a value is attempted to be set outside
+	 * the `$this->demandDeltaSecs` interval.
+	 *
+	 * @param int $time Unix timestamp.
+	 * @param double $watts The value to set at `$time`.
+	 * @return bool True if successful, false otherwise.
+	 */
 	public function updateHistory($time, $watts) {
-		if ($time - $this->start_time > $this->demandDeltaSecs) {
+
+		if ($time - $this->start_time->timestamp > $this->demandDeltaSecs) {
 			return false;
 		}
 		$wattHours = ($watts / 3600.0);
@@ -56,12 +76,37 @@ class DemandHistory extends Model
 		return true;
 	}
 
-	public function start($now = time()) {
+	/**
+	 * Set `$start_time` by rounding to the nearest `$this->demandDeltaMins`.
+	 *
+	 * @param bool|true $now Find `$start_time` based on the time now.
+	 * @return void
+	 */
+	public function start($now = true) {
+		if ($now === true) {
+			$this->start_time = Carbon::now()->second(0);
+			$this->start_time->minute(
+				($this->start_time->minute / $this->demandDeltaMins)
+				* $this->demandDeltaMins );
+		}
 	}
 
+	/**
+	 * Set `$end_time` by adding `$this->demandDeltaMins` to `$start_time`.
+	 *
+	 * @return void
+	 */
 	public function complete() {
+		$this->end_time = $this->start_time->copy()
+			->addMinutes($this->demandDeltaMins)
+			->subSecond();
 	}
 
+	/**
+	 * Get the BillingCycle associated with this DemandHistory.
+	 *
+	 * @return \App\BillingCycle
+	 */
 	public function billingCycle() {
 		return $this->belongsTo('App\BillingCycle');
 	}

@@ -13,6 +13,7 @@ use App\CurveFuncs;
  *
  * @property string $name A name for this LoadCurve.
  * @property string $data The data for this curve in CSV format.
+ * @property string $serialized_data The data for this curve in CSV format.
  */
 class LoadCurve extends Model
 {
@@ -24,6 +25,11 @@ class LoadCurve extends Model
 	 * @var boolean $timestamps Use timestamps.
 	 */
 	public $timestamps = true;
+
+	/**
+	 * @var double[] $load_data The load data for this curve.
+	 */
+	protected $load_data = [];
 
 	/**
 	 * Parse the curve data stored in this object.
@@ -38,27 +44,80 @@ class LoadCurve extends Model
 	}
 
 	/**
+	 * Create a new load curve with the given data.
+	 *
+	 * @param double[] $load_data An array of load data.
+	 * @return LoadCurve A new LoadCurve object containing the given data.
+	 */
+	public static function createWithData($load_data) {
+		$curve = new LoadCurve();
+		$curve->load_data = $load_data;
+
+		return $curve;
+	}
+
+	/**
 	 * Drop all values after `$time` from the data.
 	 *
 	 * Thus giving you all data after `$time`.
 	 *
 	 * @param double|int $time The point after which all data is kept.
-	 * @return App\LoadCurve A new LoadCurve containing only data after `$time`.
+	 * @return \App\LoadCurve A new LoadCurve containing only data after `$time`.
 	 */
 	public function dataAfter($time) {
-
+		return LoadCurve::createWithData(
+			array_filter($this->load_data, function ($t) use ($time) {
+				return $t >= $time;
+			}, ARRAY_FILTER_USE_KEY));
 	}
 
-	public function appendToData($time, $watts) {
-
+	/**
+	 * Set the load to `$watts` at time `$time`.
+	 *
+	 * @param int $time A Unix timestamp.
+	 * @param double $watts The value to set at `$time`.
+	 */
+	public function setDataAt($time, $watts) {
+		$this->load_data[$time] = $watts;
 	}
 
+	/**
+	 * Add the value `$watts` to the value at time `$time` in this curve.
+	 *
+	 * @param mixed $time
+	 * @param double $watts
+	 * @return void
+	 */
 	public function addToData($time, $watts) {
-
+		$this->setDataAt( $time, $this->getDataAt($time) + $watts );
 	}
 
+	/**
+	 * Get the load data associated with a specific time in this curve.
+	 *
+	 * @param mixed $time The time to get load data at.
+	 * @return double The load in watts at the given `$time`.
+	 */
 	public function getDataAt($time) {
+		return $this->load_data[$time];
+	}
 
+	/**
+	 * Serialize the data contained in this LoadCurve for saving to DB.
+	 *
+	 * @return void
+	 */
+	public function serialize_data() {
+		$this->serialized_data = json_encode($this->load_data);
+	}
+
+	/**
+	 * Unserialize the data saved in `$serialized_data`.
+	 *
+	 * @return void
+	 */
+	public function unserialize_data() {
+		$this->load_data = json_decode($this->serialized_data);
 	}
 
 	function simulation() {
