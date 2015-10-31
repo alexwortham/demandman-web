@@ -7,3 +7,5 @@ storage/
 *.csv
 public/docs/
 *.swp
+.idea/
+composer.phar
