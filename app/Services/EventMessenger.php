@@ -24,7 +24,7 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Broadcast an ActionRequest to subscribers.
 	 *
-	 * @param App\ActionRequest $request The request to broadcast.
+	 * @param \App\ActionRequest $request The request to broadcast.
 	 * @return void
 	 */
 	public function broadcastRequest(ActionRequest $request) {
@@ -34,9 +34,9 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Create an ActionRequest instance.
 	 *
-	 * @param App\Appliance $app The appliance under request.
+	 * @param \App\Appliance $app The appliance under request.
 	 * @param string $action The requested action.
-	 * @return App\ActionRequest A new ActionRequest instance.
+	 * @return \App\ActionRequest A new ActionRequest instance.
 	 */
 	public function createRequest(Appliance $app, $action) {
 		$actionRequest = new AppActionRequest();
@@ -50,7 +50,7 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Encode an ActionRequest as a string.
 	 *
-	 * @param App\ActionRequest $request The ActionRequest to encode.
+	 * @param \App\ActionRequest $request The ActionRequest to encode.
 	 * @return string A string representation of the request.
 	 */
 	public function encodeRequest(ActionRequest $request) {
@@ -60,7 +60,7 @@ class EventMessenger implements ApiMessenger
 	 * Decode a request string into an ActionRequest object.
 	 *
 	 * @param string $request The request string to decode.
-	 * @return App\ActionRequest The decoded ActionRequest object.
+	 * @return \App\ActionRequest The decoded ActionRequest object.
 	 */
 	public function decodeRequest($request) {
 	}
@@ -80,7 +80,7 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Broadcast an ActionResponse to subscribers.
 	 *
-	 * @param App\ActionResponse $response The response to broadcast.
+	 * @param \App\ActionResponse $response The response to broadcast.
 	 * @return void
 	 */
 	public function broadcastResponse(ActionResponse $response) {
@@ -90,9 +90,9 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Create an ActionResponse instance.
 	 *
-	 * @param App\ActionRequest $request The request to respond to.
+	 * @param \App\ActionRequest $request The request to respond to.
 	 * @param mixed The contents of the response.
-	 * @return App\ActionResponse A new ActionResponse object.
+	 * @return \App\ActionResponse A new ActionResponse object.
 	 */
 	public function createResponse(ActionRequest $request, $response) {
 		$actionResponse = new AppActionResponse();
@@ -109,7 +109,7 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Encode an ActionResponse as a string.
 	 *
-	 * @param App\ActionResponse $response The ActionResponse to encode.
+	 * @param \App\ActionResponse $response The ActionResponse to encode.
 	 * @return string A string representation of the response.
 	 */
 	public function encodeResponse(ActionResponse $response) {
@@ -119,7 +119,7 @@ class EventMessenger implements ApiMessenger
 	 * Decode a response string into an ActionResponse object.
 	 *
 	 * @param string $response The response string to decode.
-	 * @return App\ActionResponse The decoded ActionResponse object.
+	 * @return \App\ActionResponse The decoded ActionResponse object.
 	 */
 	public function decodeResponse($response) {
 		return json_decode($response, true)['data']['actionResponse'];
