@@ -28,6 +28,10 @@ class BufferedAnalog
     const CHAN_6 = 64;
     /** Channel 7 mask */
     const CHAN_7 = 128;
+    /** Analog range (raw) */
+    const RAW_RANGE = 4096;
+    /** Analog range in mV */
+    const MV_RANGE = 1800;
 
     /**
      * @var int $channels Bitmasked value of open channels.
@@ -55,17 +59,23 @@ class BufferedAnalog
     public $avg_length;
 
     /**
+     * @var boolean $use_mv If true, return mv values.
+     */
+    public $use_mv;
+
+    /**
      * Open a buffer of a specified length on the given channels.
      *
      * @param int $length The desired length of the buffer.
      * @param int $channels Bitmasked value of channels to buffer.
      * @param int $avg_length The number of values to average.
      */
-    public function __construct(int $length, int $channels, int $avg_length = 0) {
+    public function __construct($length, $channels, $avg_length = 0, $use_mv = false) {
         $this->length = $length;
         $this->channels = $channels;
         $this->is_open = false;
         $this->avg_length = $avg_length;
+        $this->use_mv = $use_mv;
     }
 
     /**
@@ -106,10 +116,11 @@ class BufferedAnalog
                 $total = count($vals);
                 $i = 0;
                 $remainder = $total % $this->avg_length;
-                $num_vals = $total / $this->avg_length;
+                $num_vals = intval($total / $this->avg_length);
                 if ($total >= $this->avg_length) {
                     for ($i = 0; $i < ($this->avg_length * $num_vals); $i++) {
-                        if (($i > 0) && ($i % $this->avg_length == 0)) {
+                        if (($i % $this->avg_length == ($this->avg_length - 1))) {
+                            $sum += $vals[$i];
                             $values[$channel][] = intval(round( doubleval($sum) / $this->avg_length));
                             $sum = 0;
                         } else {
@@ -130,6 +141,19 @@ class BufferedAnalog
 
         } else {
             $this->last_read = $buffer;
+        }
+
+        if ($this->use_mv !== false) {
+            $mv_values = array();
+            foreach ($this->last_read as $channel => $vals) {
+                $mv_vals = array();
+                foreach ($vals as $key => $val) {
+                    $mv_vals[] = intval(round(($val / self::RAW_RANGE) * self::MV_RANGE));
+                }
+                $mv_values[] = $mv_vals;
+            }
+
+            $this->last_read = $mv_values;
         }
 
         return $this->last_read;
