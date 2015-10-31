@@ -8,10 +8,12 @@ use App\Simulator;
 use Event;
 use App\Events\AppActionResponseEvent;
 
-pcntl_signal(SIGUSR1, function($signo) {
-	$connection = Redis::connection('pubsub');
-	SimulatorCommand::$event = $connection->lpop(SimulatorCommand::$eventkey);
-});
+if (function_exists('pcntl_signal')) {
+	pcntl_signal(SIGUSR1, function ($signo) {
+		$connection = Redis::connection('pubsub');
+		SimulatorCommand::$event = $connection->lpop(SimulatorCommand::$eventkey);
+	});
+}
 
 class SimulatorCommand extends Command
 {
@@ -44,7 +46,7 @@ class SimulatorCommand extends Command
     public function __construct(Simulator $simulator)
     {
         parent::__construct();
-	self::$simulator = $simulator;
+        self::$simulator = $simulator;
     }
 
     /**
@@ -54,18 +56,22 @@ class SimulatorCommand extends Command
      */
     public function handle()
     {
-	self::$pid = posix_getpid();
-	self::$eventkey = 'process:'.self::$pid.':queue';
-	$connection = Redis::connection('pubsub');
-	$connection->set(self::SIM_PID_KEY, self::$pid);
-
-        while (true) {
-		pcntl_signal_dispatch();
-		if (self::$event !== NULL) {
-			$this->handle_signal();
+		if (!function_exists('pcntl_signal')) {
+			$this->error('pcntl_signal function is not defined! Cannot run simulator.');
+			return false;
 		}
-		self::$simulator->step();
-	}
+        self::$pid = posix_getpid();
+        self::$eventkey = 'process:'.self::$pid.':queue';
+        $connection = Redis::connection('pubsub');
+        $connection->set(self::SIM_PID_KEY, self::$pid);
+
+            while (true) {
+            pcntl_signal_dispatch();
+            if (self::$event !== NULL) {
+                $this->handle_signal();
+            }
+            self::$simulator->step();
+        }
     }
 
 	private function handle_signal() {
