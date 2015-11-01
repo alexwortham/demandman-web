@@ -6,7 +6,7 @@
  * Where a demand window is the averaging period for demand
  * charges.
  */
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Services\CostCalculator;
@@ -105,9 +105,9 @@ class DemandHistory extends Model
 	/**
 	 * Get the BillingCycle associated with this DemandHistory.
 	 *
-	 * @return \App\BillingCycle
+	 * @return \App\Model\BillingCycle
 	 */
 	public function billingCycle() {
-		return $this->belongsTo('App\BillingCycle');
+		return $this->belongsTo('App\Model\BillingCycle');
 	}
 }

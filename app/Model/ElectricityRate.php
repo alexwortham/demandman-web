@@ -3,7 +3,7 @@
 /**
  * Model class for storing information on electricity rates.
  */
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +20,6 @@ class ElectricityRate extends Model
 {
     //
 	public function billingCycles() {
-		return $this->hasMany('App\BillingCycle');
+		return $this->hasMany('App\Model\BillingCycle');
 	}
 }
