@@ -14,6 +14,7 @@ use App\CurveFuncs;
  * @property string $name A name for this LoadCurve.
  * @property string $data The data for this curve in CSV format.
  * @property string $serialized_data The data for this curve in CSV format.
+ * @property \App\Model\LoadData[] The LoadDatas associated with this LoadCurve.
  */
 class LoadCurve extends Model
 {
@@ -121,10 +122,20 @@ class LoadCurve extends Model
 	}
 
 	function simulation() {
-		return $this->hasOne('App\Simulation');
+		return $this->hasOne('App\Model\Simulation');
 	}
 
 	function run() {
-		return $this->hasOne('App\Run');
+		return $this->hasOne('App\Model\Run');
+	}
+
+	/**
+	 * Get the LoadDatas associated with this LoadCurve.
+	 *
+	 * @return \App\Model\LoadData[] An array of LoadData associated with this
+	 * LoadCurve.
+	 */
+	public function loadData() {
+		return $this->hasMany('App\Model\LoadData');
 	}
 }

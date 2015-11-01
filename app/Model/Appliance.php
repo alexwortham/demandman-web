@@ -32,16 +32,20 @@ class Appliance extends Model {
 	 * associated with this appliance.
 	 */
 	public function simulations() {
-		return $this->hasMany('App\Simulation');
+		return $this->hasMany('App\Model\Simulation');
 	}
 
 	/**
 	 * The the runs associated with this appliance.
 	 *
-	 * @return \App\Model\Run[] An array of runs associated with this appliance.
+	 * @return \App\Model\Run[] An array of Runs associated with this appliance.
 	 */
 	public function runs() {
-		return $this->hasMany('App\Run');
+		return $this->hasMany('App\Model\Run');
+	}
+
+	public function loadData() {
+		return $this->hasMany('App\Model\LoadData');
 	}
 
 	/**
@@ -51,6 +55,6 @@ class Appliance extends Model {
 	 * associated with this appliance.
 	 */
 	public function currentMonitor() {
-		return $this->hasOne('App\AnalogCurrentMonitor');
+		return $this->hasOne('App\Model\AnalogCurrentMonitor');
 	}
 }

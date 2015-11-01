@@ -13,15 +13,20 @@ use App\Analog;
  * A model class for current sensors.
  *
  * @property int $ain_number The AIN number to monitor. (E.g. AIN0)
- * @property App\Appliance $appliance The appliance to which this monitor is attached.
+ * @property \App\Model\Appliance $appliance The appliance to which
+ * this monitor is attached.
  * @property string $name An optional name for the monitor.
- * @property int $voltage The Voltage of the circuit to which this monitor is attached.
- * @property double $sensitivity The sensitivity of the Analog sensor in mV/A.
+ * @property int $voltage The Voltage of the circuit to which this
+ * monitor is attached.
+ * @property double $sensitivity The sensitivity of the Analog sensor
+ * in mV/A.
  * @property double $bias The zero point of the sensor in milliVolts.
+ * @property \App\Model\LoadData[] The LoadDatas associated with this
+ * AnalogCurrentMonitor.
  */
 class AnalogCurrentMonitor extends Model implements CurrentMonitor
 {
-	/** @var App\Analog $analog The analog input for the monitor */
+	/** @var \App\Analog $analog The analog input for the monitor */
 	private $analog;
 
 	/**
@@ -69,9 +74,20 @@ class AnalogCurrentMonitor extends Model implements CurrentMonitor
 	/**
 	 * Get the Appliance associated with this CurrentMonitor.
 	 *
-	 * @return App\Appliance The Appliance associated with this CurrentMonitor.
+	 * @return \App\Model\Appliance The Appliance associated with this CurrentMonitor.
 	 */
 	public function appliance() {
-		return $this->belongsTo('App\Appliance');
+		return $this->belongsTo('App\Model\Appliance');
 	}
+
+	/**
+	 * Get the LoadDatas associated with this AnalogCurrentMonitor.
+	 *
+	 * @return \App\Model\LoadData[] An array of LoadData associated with this
+	 * AnalogCurrentMonitor.
+	 */
+	public function loadData() {
+		return $this->hasMany('App\Model\LoadData');
+	}
+
 }
