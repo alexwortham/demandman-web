@@ -5,17 +5,26 @@
  */
 namespace App\Services;
 
+use App\BufferedAnalog;
 use App\Model\AnalogCurrentMonitor;
-use App\Model\LoadCurve;
-use App\Services\CostCalculator;
+use App\Model\LoadData;
 use App\Model\DemandHistory;
 use App\Model\Run;
+use \Carbon\Carbon;
 
 /**
  * An implementation of the Meter service interface.
  */
 class MeterService implements Meter
 {
+	/**
+	 * Which analog channels to open for buffering.
+	 *
+	 * This is the result of CHAN_0 | CHAN_1 | CHAN_2 | CHAN_3 constants
+	 * found in the BufferedAnalog class.
+	 */
+	const CHANNELS = 15;
+
 	/** @var int $meter_interval The number of seconds between readings. */
 	public static $meter_interval = 1;
 
@@ -35,13 +44,18 @@ class MeterService implements Meter
 	/** @var \App\Model\LoadCurve[] $curves An array of LoadCurves indexed by `$appliance->id` */
 	private $curves;
 
-	/** @var int $time The current time on which measurements are synchronized */
+	/** @var \Carbon\Carbon $time The current time on which measurements are synchronized */
 	private $time;
 
 	private $demandHistory = null;
 
+	/** @var \App\BufferedAnalog $bufferedAnalog Buffer to read from. */
+	private $bufferedAnalog;
+
 	public function __construct(CostCalculator $calculator) {
 		$this->calculator = $calculator;
+		$this->bufferedAnalog = new BufferedAnalog(2048, self::CHANNELS, 30, true);
+		$this->time = Carbon::now()->second(0);
 	}
 
 	/**
@@ -49,7 +63,6 @@ class MeterService implements Meter
 	 */
 	public function appStart($appId) {
 		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId);
-		$currentMonitor->setup();
 		$this->activeMonitors[$appId] = $currentMonitor;
 		$curve = Run::where('appliance_id', $appId)
 			->and('is_running', true)->first()->loadCurve;
@@ -61,7 +74,6 @@ class MeterService implements Meter
 	 */
 	public function appStop($appId) {
 		$curve = $this->curves[$appId];
-		$curve->serialize_data();
 		$curve->save();
 		unset($this->activeMonitors[$appId]);
 	}
@@ -74,11 +86,18 @@ class MeterService implements Meter
 	 * @return void
 	 */
 	public function measure() {
+		$buffer = $this->bufferedAnalog->read();
 		foreach ($this->activeMonitors as $appId => $monitor) {
-			$watts = $monitor->getWatts();
-			$curve = $this->curves[$appId];
-			$curve->addToData($this->time, $watts);
-			$this->aggregate->addToData($this->time, $watts);
+			/* @var $monitor \App\Model\AnalogCurrentMonitor */
+			foreach ($buffer[$monitor->ain_number] as $raw_value) {
+				$watts = $monitor->getWatts($raw_value);
+				$curve = $this->curves[$appId];
+				$loadData = LoadData::create($monitor, $this->time, $watts);
+				$curve->addToData($this->time, $loadData);
+				$this->aggregate->addToData($this->time, $loadData);
+			}
+
+
 		}
 	}
 
@@ -89,19 +108,19 @@ class MeterService implements Meter
 		}
 		while ($this->meterWait()) {
 			$this->measure();
-			$agg_watts = $this->aggregate->getDataAt($this->time);
-			if ( ! $this->demandHistory->updateHistory($this->time, $agg_watts) ) {
+			$agg_load = $this->aggregate->getDataAt($this->time->timestamp);
+			if ( ! $this->demandHistory->updateHistory($agg_load) ) {
 				$this->demandHistory->complete();
 				$this->demandHistory->save();
 				$this->demandHistory = new DemandHistory($this->calculator);
 				$this->demandHistory->start();
-				$this->demandHistory->updateHistory($this->time, $agg_watts);
+				$this->demandHistory->updateHistory($agg_load);
 			}
 		}
 	}
 
 	public function meterWait() {
-		$this->time = time() + 1;
-		return time_sleep_until($this->time);
+		$this->time = $this->time->copy()->addMinute();
+		return time_sleep_until(time() + 1);
 	}
 }

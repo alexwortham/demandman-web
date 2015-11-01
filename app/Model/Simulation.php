@@ -6,8 +6,6 @@
 namespace App\Model;
 
 use App\LoadMeter;
-use App\Model\Appliance;
-use App\Model\LoadCurve;
 use App\CurveFuncs;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,11 +21,9 @@ class Simulation extends Model
 {
 	public $currentStep = 0;
 	private $count;
+	/** @var  \App\LoadMeter $loadMeter */
 	private $loadMeter;
 	private $simCurve;
-
-	public function __construct() {
-	}
 
 	public function activate() {
 		$this->loadMeter = new LoadMeter($this->appliance->name,

@@ -7,7 +7,6 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use App\CurrentMonitor;
-use App\Analog;
 
 /**
  * A model class for current sensors.
@@ -26,35 +25,32 @@ use App\Analog;
  */
 class AnalogCurrentMonitor extends Model implements CurrentMonitor
 {
-	/** @var \App\Analog $analog The analog input for the monitor */
-	private $analog;
-
 	/**
 	 * @inheritdoc
 	 */
-	public function getAmps() {
-		return abs($this->analog->read_raw() - $this->bias) * $this->sensitivity;
+	public function getAmps($raw_value) {
+		return abs($raw_value - $this->bias) * $this->sensitivity;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getMilliAmps() {
-		return $this->getAmps() * 1000.0;
+	public function getMilliAmps($raw_value) {
+		return $this->getAmps($raw_value) * 1000.0;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getWatts() {
-		return $this->getAmps() * $this->getVoltage();
+	public function getWatts($raw_value) {
+		return $this->getAmps($raw_value) * $this->getVoltage();
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getKiloWatts() {
-		return $this->getWatts() / 1000.0;
+	public function getKiloWatts($raw_value) {
+		return $this->getWatts($raw_value) / 1000.0;
 	}
 
 	/**
@@ -62,13 +58,6 @@ class AnalogCurrentMonitor extends Model implements CurrentMonitor
 	 */
 	public function getVoltage() {
 		return $this->voltage;
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function setup() {
-		$this->analog = new Analog($this->ain_number);
 	}
 
 	/**
@@ -83,8 +72,7 @@ class AnalogCurrentMonitor extends Model implements CurrentMonitor
 	/**
 	 * Get the LoadDatas associated with this AnalogCurrentMonitor.
 	 *
-	 * @return \App\Model\LoadData[] An array of LoadData associated with this
-	 * AnalogCurrentMonitor.
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function loadData() {
 		return $this->hasMany('App\Model\LoadData');

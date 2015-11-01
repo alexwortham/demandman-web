@@ -13,30 +13,34 @@ interface CurrentMonitor
 	/**
 	 * Get the value of the monitor in Amps.
 	 *
+	 * @param double $raw_value The raw value from the current sensor.
 	 * @return double The value of the monitor in Amps.
 	 */
-	public function getAmps();
+	public function getAmps($raw_value);
 
 	/**
 	 * Get the value of the monitor in MilliAmps.
 	 *
+	 * @param double $raw_value The raw value from the current sensor.
 	 * @return double The value of the monitor in MilliAmps.
 	 */
-	public function getMilliAmps();
+	public function getMilliAmps($raw_value);
 
 	/**
 	 * Get the value of the monitor in Watts.
-	 * 
+	 *
+	 * @param double $raw_value The raw value from the current sensor.
 	 * @return double The value of the monitor in Watts.
 	 */
-	public function getWatts();
+	public function getWatts($raw_value);
 
 	/**
 	 * Get the value of the monitor in KiloWatts.
-	 * 
+	 *
+	 * @param double $raw_value The raw value from the current sensor.
 	 * @return double The value of the monitor in KiloWatts.
 	 */
-	public function getKiloWatts();
+	public function getKiloWatts($raw_value);
 
 	/**
 	 * Get the voltage of the circuit to which this monitor is attached.
@@ -45,10 +49,4 @@ interface CurrentMonitor
 	 */
 	public function getVoltage();
 
-	/**
-	 * Perform any actions necessary to setup the current monitor.
-	 *
-	 * @return void
-	 */
-	public function setup();
 }

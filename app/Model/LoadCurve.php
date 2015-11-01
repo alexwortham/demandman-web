@@ -7,6 +7,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use App\CurveFuncs;
+use \Carbon\Carbon;
 
 /**
  * Database Model class for LoadCurves.
@@ -14,7 +15,6 @@ use App\CurveFuncs;
  * @property string $name A name for this LoadCurve.
  * @property string $data The data for this curve in CSV format.
  * @property string $serialized_data The data for this curve in CSV format.
- * @property \App\Model\LoadData[] The LoadDatas associated with this LoadCurve.
  */
 class LoadCurve extends Model
 {
@@ -28,7 +28,7 @@ class LoadCurve extends Model
 	public $timestamps = true;
 
 	/**
-	 * @var double[] $load_data The load data for this curve.
+	 * @var \App\Model\LoadData[] $load_data The load data for this curve.
 	 */
 	protected $load_data = [];
 
@@ -65,60 +65,42 @@ class LoadCurve extends Model
 	 * @param double|int $time The point after which all data is kept.
 	 * @return \App\Model\LoadCurve A new LoadCurve containing only data after `$time`.
 	 */
-	public function dataAfter($time) {
+	public function dataAfter(Carbon $time) {
 		return LoadCurve::createWithData(
 			array_filter($this->load_data, function ($t) use ($time) {
-				return $t >= $time;
+				return $t >= $time->timestamp;
 			}, ARRAY_FILTER_USE_KEY));
 	}
 
 	/**
 	 * Set the load to `$watts` at time `$time`.
 	 *
-	 * @param int $time A Unix timestamp.
-	 * @param double $watts The value to set at `$time`.
+	 * @param \Carbon\Carbon $time A Unix timestamp.
+	 * @param \App\Model\LoadData $data The value to set at `$time`.
 	 */
-	public function setDataAt($time, $watts) {
-		$this->load_data[$time] = $watts;
+	public function setDataAt(Carbon $time, LoadData $data) {
+		$this->load_data[$time->timestamp] = $data;
 	}
 
 	/**
 	 * Add the value `$watts` to the value at time `$time` in this curve.
 	 *
-	 * @param mixed $time
-	 * @param double $watts
+	 * @param \Carbon\Carbon $time
+	 * @param \App\Model\LoadData $data
 	 * @return void
 	 */
-	public function addToData($time, $watts) {
-		$this->setDataAt( $time, $this->getDataAt($time) + $watts );
+	public function addToData(Carbon $time, LoadData $data) {
+		$this->getDataAt($time->timestamp)->addToLoad($data);
 	}
 
 	/**
 	 * Get the load data associated with a specific time in this curve.
 	 *
 	 * @param mixed $time The time to get load data at.
-	 * @return double The load in watts at the given `$time`.
+	 * @return \App\Model\LoadData The load in watts at the given `$time`.
 	 */
 	public function getDataAt($time) {
 		return $this->load_data[$time];
-	}
-
-	/**
-	 * Serialize the data contained in this LoadCurve for saving to DB.
-	 *
-	 * @return void
-	 */
-	public function serialize_data() {
-		$this->serialized_data = json_encode($this->load_data);
-	}
-
-	/**
-	 * Unserialize the data saved in `$serialized_data`.
-	 *
-	 * @return void
-	 */
-	public function unserialize_data() {
-		$this->load_data = json_decode($this->serialized_data);
 	}
 
 	function simulation() {
@@ -132,10 +114,27 @@ class LoadCurve extends Model
 	/**
 	 * Get the LoadDatas associated with this LoadCurve.
 	 *
-	 * @return \App\Model\LoadData[] An array of LoadData associated with this
-	 * LoadCurve.
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function loadData() {
 		return $this->hasMany('App\Model\LoadData');
 	}
+
+	/**
+	 * Save the model.
+	 *
+	 * Call the `saveMany()` method to save all LoadDatas stored in
+	 * `$this->load_data`.
+	 *
+	 * @inheritdoc
+	 */
+	public function save(array $options = []) {
+
+		if (is_array($this->load_data) && count($this->load_data) > 0) {
+			$this->loadData()->saveMany($this->load_data);
+		}
+
+		parent::save($options);
+	}
+
 }

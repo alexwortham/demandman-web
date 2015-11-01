@@ -57,19 +57,18 @@ class DemandHistory extends Model
 	 * The function returns false if a value is attempted to be set outside
 	 * the `$this->demandDeltaSecs` interval.
 	 *
-	 * @param int $time Unix timestamp.
-	 * @param double $watts The value to set at `$time`.
+	 * @param \App\Model\LoadData $data The LoadData to update with.
 	 * @return bool True if successful, false otherwise.
 	 */
-	public function updateHistory($time, $watts) {
+	public function updateHistory($data) {
 
-		if ($time - $this->start_time->timestamp > $this->demandDeltaSecs) {
+		if ($data->time->timestamp - $this->start_time->timestamp > $this->demandDeltaSecs) {
 			return false;
 		}
-		$wattHours = ($watts / 3600.0);
+		$wattHours = ($data->load / 3600.0);
 		$this->wattHrSum += $wattHours;
 		$this->usage_charge += ($wattHours / 1000.0) * $this->costPerKwHr;
-		$this->sum += $watts;
+		$this->sum += $data->load;
 		$this->demand_charge = 
 			($this->sum / $this->demandDeltaSecs) * $this->costPerKw;
 
@@ -86,7 +85,7 @@ class DemandHistory extends Model
 		if ($now === true) {
 			$this->start_time = Carbon::now()->second(0);
 			$this->start_time->minute(
-				($this->start_time->minute / $this->demandDeltaMins)
+				intval($this->start_time->minute / $this->demandDeltaMins)
 				* $this->demandDeltaMins );
 		}
 	}

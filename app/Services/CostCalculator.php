@@ -15,7 +15,7 @@ interface CostCalculator
 	/**
 	 * Calculate the demand charge of the given LoadCurve. (maxima)
 	 *
-	 * @param App\LoadCurve $curve The LoadCurve to calculate charges for.
+	 * @param \App\Model\LoadCurve $curve The LoadCurve to calculate charges for.
 	 * @return double The calculated demand charge.
 	 */
 	public function demandCost(LoadCurve $curve);
@@ -23,7 +23,7 @@ interface CostCalculator
 	/**
 	 * Calculate the usage charge of the given LoadCurve. (integral)
 	 *
-	 * @param App\LoadCurve $curve The LoadCurve to calculate charges for.
+	 * @param \App\Model\LoadCurve $curve The LoadCurve to calculate charges for.
 	 * @return double The calculated demand charge.
 	 */
 	public function usageCost(LoadCurve $curve);

@@ -6,22 +6,48 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use \Carbon\Carbon;
 
 /**
  * Model class for storing a single load datum.
  *
  * @property \Carbon\Carbon $time The timestamp for this datum.
  * @property double $load The load measured at this point in time.
- * @property \App\Model\LoadCurve $loadCurve The LoadCurve which owns this datum.
- * @property \App\Model\AnalogCurrentMonitor The AnalogCurrentMonitor which made
- * the measurement contained in this datum.
+ * @property \App\Model\AnalogCurrentMonitor $currentMonitor The
+ * @property \App\Model\LoadCurve $loadCurve The LoadCurve associated
+ * with this model.
+ * AnalogCurrentMonitor which made the measurement contained in this datum.
  */
 class LoadData extends Model
 {
+
+    /**
+     * @param \App\Model\AnalogCurrentMonitor $mon
+     * @param Carbon $time
+     * @param $load
+     * @return \App\Model\LoadData
+     */
+    public static function create(AnalogCurrentMonitor $mon,
+                                  Carbon $time, $load) {
+        $data = new LoadData();
+        $data->time = $time;
+        $data->load = $load;
+        $data->currentMonitor()->associate($mon);
+
+        return $data;
+    }
+
+    /**
+     * @param \App\Model\LoadData $data A value to add to the current load.
+     */
+    public function addToLoad(LoadData $data) {
+        $this->load += $data->load;
+    }
+
     /**
      * Get the LoadCurve which owns this datum.
      *
-     * @return \App\Model\LoadCurve The LoadCurve which owns this datum.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function loadCurve() {
         return $this->belongsTo('App\Model\LoadCurve');
@@ -30,8 +56,7 @@ class LoadData extends Model
     /**
      * Get the CurrentMonitor which made the measurement contained in this datum.
      *
-     * @return \App\Model\AnalogCurrentMonitor The CurrentMonitor which made
-     * this measurement contained in this datum.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function currentMonitor() {
         return $this->belongsTo('App\Model\AnalogCurrentMonitor');
