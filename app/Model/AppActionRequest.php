@@ -1,8 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use App\ActionRequest;
 
 class AppActionRequest extends Model implements ActionRequest
 {

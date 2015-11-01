@@ -8,7 +8,7 @@ namespace App\Services;
 use App\Model\Appliance;
 use App\ActionRequest;
 use App\ActionResponse;
-use App\AppActionRequest;
+use App\Model\AppActionRequest;
 use App\AppActionResponse;
 use App\Events\AppActionRequestEvent;
 use App\Events\AppActionResponseEvent;
