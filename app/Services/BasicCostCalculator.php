@@ -5,7 +5,7 @@
  */
 namespace App\Services;
 
-use App\LoadCurve;
+use App\Model\LoadCurve;
 
 /**
  * An implementation of the CostCalculator interface.

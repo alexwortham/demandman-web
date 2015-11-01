@@ -3,7 +3,7 @@
 /**
  * Database Model class for LoadCurves.
  */
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use App\CurveFuncs;
@@ -47,7 +47,7 @@ class LoadCurve extends Model
 	 * Create a new load curve with the given data.
 	 *
 	 * @param double[] $load_data An array of load data.
-	 * @return LoadCurve A new LoadCurve object containing the given data.
+	 * @return \App\Model\LoadCurve A new LoadCurve object containing the given data.
 	 */
 	public static function createWithData($load_data) {
 		$curve = new LoadCurve();
@@ -62,7 +62,7 @@ class LoadCurve extends Model
 	 * Thus giving you all data after `$time`.
 	 *
 	 * @param double|int $time The point after which all data is kept.
-	 * @return \App\LoadCurve A new LoadCurve containing only data after `$time`.
+	 * @return \App\Model\LoadCurve A new LoadCurve containing only data after `$time`.
 	 */
 	public function dataAfter($time) {
 		return LoadCurve::createWithData(

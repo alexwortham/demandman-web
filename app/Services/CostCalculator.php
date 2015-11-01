@@ -5,7 +5,7 @@
  */
 namespace App\Services;
 
-use App\LoadCurve;
+use App\Model\LoadCurve;
 
 /**
  * An interface for calculating electricity costs.

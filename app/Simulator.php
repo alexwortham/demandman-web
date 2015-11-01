@@ -4,6 +4,7 @@ namespace App;
 use App\Model\Appliance;
 use App\LoadMeter;
 use App\Services\ApplianceApi as Api;
+use App\Model\Simulation;
 
 class Simulator
 {

@@ -3,11 +3,11 @@
 /**
  * Model class for individual appliance simulations.
  */
-namespace App;
+namespace App\Model;
 
 use App\LoadMeter;
 use App\Model\Appliance;
-use App\LoadCurve;
+use App\Model\LoadCurve;
 use App\CurveFuncs;
 use Illuminate\Database\Eloquent\Model;
 

@@ -5,11 +5,11 @@
  */
 namespace App\Services;
 
-use App\AnalogCurrentMonitor;
-use App\LoadCurve;
+use App\Model\AnalogCurrentMonitor;
+use App\Model\LoadCurve;
 use App\Services\CostCalculator;
-use App\DemandHistory;
-use App\Run;
+use App\Model\DemandHistory;
+use App\Model\Run;
 
 /**
  * An implementation of the Meter service interface.
@@ -29,10 +29,10 @@ class MeterService implements Meter
 	 */
 	private $activeMonitors;
 
-	/** @var \App\LoadCurve $aggregate The current aggregate curve */
+	/** @var \App\Model\LoadCurve $aggregate The current aggregate curve */
 	private $aggregate;
 
-	/** @var \App\LoadCurve[] $curves An array of LoadCurves indexed by `$appliance->id` */
+	/** @var \App\Model\LoadCurve[] $curves An array of LoadCurves indexed by `$appliance->id` */
 	private $curves;
 
 	/** @var int $time The current time on which measurements are synchronized */

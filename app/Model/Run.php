@@ -3,7 +3,7 @@
 /**
  * A model class for tracking appliance runs.
  */
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 

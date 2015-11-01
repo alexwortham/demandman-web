@@ -26,19 +26,9 @@ class Appliance extends Model {
 	public $timestamps = true;
 
 	/**
-	 * Returns the Sensor model associated with this Appliance.
-	 *
-	 * @return Sensor The sensor model associated with this Appliance.
-	 */
-	public function sensor()
-	{
-		return $this->hasOne('Sensor');
-	}
-
-	/**
 	 * Get the simulations associated with this appliance.
 	 *
-	 * @return App\Simulation[] An array of Simulations 
+	 * @return \App\Model\Simulation[] An array of Simulations
 	 * associated with this appliance.
 	 */
 	public function simulations() {
@@ -48,7 +38,7 @@ class Appliance extends Model {
 	/**
 	 * The the runs associated with this appliance.
 	 *
-	 * @return App\Run[] An array of runs associated with this appliance.
+	 * @return \App\Model\Run[] An array of runs associated with this appliance.
 	 */
 	public function runs() {
 		return $this->hasMany('App\Run');
@@ -57,7 +47,7 @@ class Appliance extends Model {
 	/**
 	 * Get the AnalogCurrentMonitor associated with this appliance.
 	 *
-	 * @return App\AnalogCurrentMonitor The AnalogCurrentMonitor 
+	 * @return \App\Model\AnalogCurrentMonitor The AnalogCurrentMonitor
 	 * associated with this appliance.
 	 */
 	public function currentMonitor() {
