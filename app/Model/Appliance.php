@@ -5,8 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Database Model class for Appliances.
  *
@@ -14,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * 'wheater', 'dishwash', 'dryer'.
  * @property string $name A name for this appliance.
  */
-class Appliance extends Model {
+class Appliance extends \Eloquent {
 
 	/**
 	 * @var string $table The name of the appliances table: 'appliances'.

@@ -5,7 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
 use \Carbon\Carbon;
 
 /**
@@ -18,7 +17,7 @@ use \Carbon\Carbon;
  * with this model.
  * AnalogCurrentMonitor which made the measurement contained in this datum.
  */
-class LoadData extends Model
+class LoadData extends \Eloquent
 {
 
     /**

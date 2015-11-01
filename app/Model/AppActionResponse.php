@@ -2,10 +2,9 @@
 
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
 use App\ActionResponse;
 
-class AppActionResponse extends Model implements ActionResponse
+class AppActionResponse extends \Eloquent implements ActionResponse
 {
 	/**
 	 * @inheritdoc

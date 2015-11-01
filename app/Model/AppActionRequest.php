@@ -5,7 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use App\ActionRequest;
 
-class AppActionRequest extends Model implements ActionRequest
+class AppActionRequest extends \Eloquent implements ActionRequest
 {
 	/**
 	 * Mark the request as approved.

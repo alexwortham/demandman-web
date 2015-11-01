@@ -5,7 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
 use App\CurveFuncs;
 use \Carbon\Carbon;
 
@@ -16,7 +15,7 @@ use \Carbon\Carbon;
  * @property string $data The data for this curve in CSV format.
  * @property string $serialized_data The data for this curve in CSV format.
  */
-class LoadCurve extends Model
+class LoadCurve extends \Eloquent
 {
 	/**
 	 * @var string $table The name of the load curves table: 'load_curves'.

@@ -5,8 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * A model class for storing information on billing cycles.
  *
@@ -22,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \DateTime $charges_updated The date of the last time that the
  * cached charge values (`$demand_charge` and `$usage_charge`) were updated.
  */
-class BillingCycle extends Model
+class BillingCycle extends \Eloquent
 {
     //
 	public function histories() {

@@ -5,7 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
 use App\CurrentMonitor;
 
 /**
@@ -23,7 +22,7 @@ use App\CurrentMonitor;
  * @property \App\Model\LoadData[] The LoadDatas associated with this
  * AnalogCurrentMonitor.
  */
-class AnalogCurrentMonitor extends Model implements CurrentMonitor
+class AnalogCurrentMonitor extends \Eloquent implements CurrentMonitor
 {
 	/**
 	 * @inheritdoc

@@ -7,7 +7,6 @@ namespace App\Model;
 
 use App\LoadMeter;
 use App\CurveFuncs;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Model class for individual appliance simulations.
@@ -17,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $min The minimum value of the simulation device.
  * @property int $max The maximum value of the simulation device.
  */
-class Simulation extends Model
+class Simulation extends \Eloquent
 {
 	public $currentStep = 0;
 	private $count;

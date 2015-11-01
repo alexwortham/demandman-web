@@ -5,8 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * A model class for tracking appliance runs.
  *
@@ -14,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \DateTime $completed_at The time the appliance completed running.
  * @property boolean $is_running Whether or not the appliance is currently running.
  */
-class Run extends Model
+class Run extends \Eloquent
 {
 	/**
 	 * Get the Appliance associated with this run.

@@ -5,8 +5,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Model class for storing information on electricity rates.
  *
@@ -16,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $demand_delta The averaging period for demand charges in minutes.
  * @property boolean $is_current True if this is the current rate used in calculations.
  */
-class ElectricityRate extends Model
+class ElectricityRate extends \Eloquent
 {
     //
 	public function billingCycles() {

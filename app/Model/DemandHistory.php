@@ -8,7 +8,6 @@
  */
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Services\CostCalculator;
 use Carbon\Carbon;
 
@@ -25,7 +24,7 @@ use Carbon\Carbon;
  * @property double $demand_charge The calculated demand charge for this period.
  * @property double $usage_charge The calculated usage charge for this period.
  */
-class DemandHistory extends Model
+class DemandHistory extends \Eloquent
 {
 	protected $calculator;
 	public $sum;
