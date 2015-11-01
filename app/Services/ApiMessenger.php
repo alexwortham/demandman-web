@@ -9,7 +9,7 @@ use App\Model\Appliance;
 use App\ActionRequest;
 use App\Model\AppActionRequest;
 use App\ActionResponse;
-use App\AppActionResponse;
+use App\Model\AppActionResponse;
 
 /**
  * Defines the message handling for the API.
@@ -64,7 +64,7 @@ interface ApiMessenger
 	 * Create an ActionResponse instance.
 	 *
 	 * @param \App\ActionRequest $request The request to respond to.
-	 * @param mixed The contents of the response.
+	 * @param mixed $response The contents of the response.
 	 */
 	public function createResponse(ActionRequest $request, $response);
 

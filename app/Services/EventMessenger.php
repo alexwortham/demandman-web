@@ -9,7 +9,7 @@ use App\Model\Appliance;
 use App\ActionRequest;
 use App\ActionResponse;
 use App\Model\AppActionRequest;
-use App\AppActionResponse;
+use App\Model\AppActionResponse;
 use App\Events\AppActionRequestEvent;
 use App\Events\AppActionResponseEvent;
 
@@ -91,7 +91,7 @@ class EventMessenger implements ApiMessenger
 	 * Create an ActionResponse instance.
 	 *
 	 * @param \App\ActionRequest $request The request to respond to.
-	 * @param mixed The contents of the response.
+	 * @param mixed $response The contents of the response.
 	 * @return \App\ActionResponse A new ActionResponse object.
 	 */
 	public function createResponse(ActionRequest $request, $response) {
