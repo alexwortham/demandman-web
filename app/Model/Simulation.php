@@ -86,6 +86,6 @@ class Simulation extends Model
 	}
 
 	public function loadCurve() {
-		return $this->belongsTo('App\LoadCurve');
+		return $this->belongsTo('App\Model\LoadCurve');
 	}
 }

@@ -19,18 +19,18 @@ class Run extends Model
 	/**
 	 * Get the Appliance associated with this run.
 	 *
-	 * @return \App\Appliance The Appliance associated with this run.
+	 * @return \App\Model\Appliance The Appliance associated with this run.
 	 */
 	public function appliance() {
-		return $this->belongsTo('App\Appliance');
+		return $this->belongsTo('App\Model\Appliance');
 	}
 
 	/**
 	 * Get the LoadCurve associated with this run.
 	 *
-	 * @return \App\LoadCurve The LoadCurve associated with this run.
+	 * @return \App\Model\LoadCurve The LoadCurve associated with this run.
 	 */
 	public function loadCurve() {
-		return $this->belongsTo('App\LoadCurve');
+		return $this->belongsTo('App\Model\LoadCurve');
 	}
 }
