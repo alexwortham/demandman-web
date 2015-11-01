@@ -65,7 +65,7 @@ class MeterService implements Meter
 		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId);
 		$this->activeMonitors[$appId] = $currentMonitor;
 		$curve = Run::where('appliance_id', $appId)
-			->and('is_running', true)->first()->loadCurve;
+			->where('is_running', true)->first()->loadCurve;
 		$this->curves[$appId] = $curve;
 	}
 
