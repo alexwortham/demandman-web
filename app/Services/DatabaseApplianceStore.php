@@ -7,7 +7,7 @@
  */
 namespace App\Services;
 
-use App\Appliance;
+use App\Model\Appliance;
 
 /**
  * An interface for access to persistent storage of Appliances.

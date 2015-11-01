@@ -13,7 +13,7 @@ use App\Events\ResumeAppEvent;
 use App\Events\WakeAppEvent;
 use App\Events\AppActionEvent;
 use Event;
-use App\Appliance;
+use App\Model\Appliance;
 use App\Services\ApplianceApi as Api;
 use App\Services\ApiMessenger;
 use Predis\Connection\ConnectionException;

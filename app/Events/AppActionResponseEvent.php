@@ -3,10 +3,8 @@
 namespace App\Events;
 
 use App\Events\Event;
-use App\ActionResponse;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use App\Appliance;
 
 class AppActionResponseEvent extends Event implements ShouldBroadcastNow
 {

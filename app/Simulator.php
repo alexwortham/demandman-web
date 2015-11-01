@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-use App\Appliance;
+use App\Model\Appliance;
 use App\LoadMeter;
 use App\Services\ApplianceApi as Api;
 

@@ -7,7 +7,7 @@
  */
 namespace App\Services;
 
-use App\Appliance;
+use App\Model\Appliance;
 
 /**
  * An implementation of the Predictor interface.

@@ -6,7 +6,6 @@ use App\Events\Event;
 use App\ActionRequest;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use App\Appliance;
 
 class AppActionRequestEvent extends Event implements ShouldBroadcastNow
 {

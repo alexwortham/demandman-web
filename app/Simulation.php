@@ -6,7 +6,7 @@
 namespace App;
 
 use App\LoadMeter;
-use App\Appliance;
+use App\Model\Appliance;
 use App\LoadCurve;
 use App\CurveFuncs;
 use Illuminate\Database\Eloquent\Model;
@@ -82,7 +82,7 @@ class Simulation extends Model
 	}
 
 	public function appliance() {
-		return $this->belongsTo('App\Appliance');
+		return $this->belongsTo('App\Model\Appliance');
 	}
 
 	public function loadCurve() {

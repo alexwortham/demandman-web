@@ -9,7 +9,7 @@
  */
 namespace App\Services;
 use App\ActionRequest;
-use App\Appliance;
+use App\Model\Appliance;
 
 /**
  * Main API Control Class.
@@ -84,7 +84,7 @@ class ApiService implements ApplianceApi
 	/**
 	 * Execute the start request.
 	 *
-	 * @param App\Appliance $appliance The appliance to act on.
+	 * @param \App\Model\Appliance $appliance The appliance to act on.
 	 * @param App\ActionRequest $request The request to act on.
 	 * @return void
 	 */
@@ -99,7 +99,7 @@ class ApiService implements ApplianceApi
 	/**
 	 * Execute the stop request.
 	 *
-	 * @param App\Appliance $appliance The appliance to act on.
+	 * @param \App\Model\Appliance $appliance The appliance to act on.
 	 * @param App\ActionRequest $request The request to act on.
 	 * @return void
 	 */
@@ -114,7 +114,7 @@ class ApiService implements ApplianceApi
 	/**
 	 * Execute the pause request.
 	 *
-	 * @param App\Appliance $appliance The appliance to act on.
+	 * @param \App\Model\Appliance $appliance The appliance to act on.
 	 * @param App\ActionRequest $request The request to act on.
 	 * @return void
 	 */
@@ -129,7 +129,7 @@ class ApiService implements ApplianceApi
 	/**
 	 * Execute the resume request.
 	 *
-	 * @param App\Appliance $appliance The appliance to act on.
+	 * @param \App\Model\Appliance $appliance The appliance to act on.
 	 * @param App\ActionRequest $request The request to act on.
 	 * @return void
 	 */
@@ -144,7 +144,7 @@ class ApiService implements ApplianceApi
 	/**
 	 * Execute the wake request.
 	 *
-	 * @param App\Appliance $appliance The appliance to act on.
+	 * @param \App\Model\Appliance $appliance The appliance to act on.
 	 * @param App\ActionRequest $request The request to act on.
 	 * @return void
 	 */

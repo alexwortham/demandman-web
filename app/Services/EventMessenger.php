@@ -5,7 +5,7 @@
  */
 namespace App\Services;
 
-use App\Appliance;
+use App\Model\Appliance;
 use App\ActionRequest;
 use App\ActionResponse;
 use App\AppActionRequest;
@@ -34,7 +34,7 @@ class EventMessenger implements ApiMessenger
 	/**
 	 * Create an ActionRequest instance.
 	 *
-	 * @param \App\Appliance $app The appliance under request.
+	 * @param \App\Model\Appliance $app The appliance under request.
 	 * @param string $action The requested action.
 	 * @return \App\ActionRequest A new ActionRequest instance.
 	 */

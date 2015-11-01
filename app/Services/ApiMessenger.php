@@ -5,7 +5,7 @@
  */
 namespace App\Services;
 
-use App\Appliance;
+use App\Model\Appliance;
 use App\ActionRequest;
 use App\AppActionRequest;
 use App\ActionResponse;
@@ -27,7 +27,7 @@ interface ApiMessenger
 	/**
 	 * Create an ActionRequest instance.
 	 *
-	 * @param App\Appliance $app The appliance under request.
+	 * @param \App\Model\Appliance $app The appliance under request.
 	 * @param string $action The requested action.
 	 * @return App\ActionRequest A new ActionRequest instance.
 	 */

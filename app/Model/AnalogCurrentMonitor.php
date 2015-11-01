@@ -3,9 +3,11 @@
 /**
  * A model class for current sensors.
  */
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use App\CurrentMonitor;
+use App\Analog;
 
 /**
  * A model class for current sensors.

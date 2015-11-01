@@ -3,7 +3,7 @@
 /**
  * Database Model class for Appliances.
  */
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
