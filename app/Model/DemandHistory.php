@@ -33,6 +33,7 @@ class DemandHistory extends \Eloquent
 	public $demandDeltaSecs;
 	public $demandDeltaMins;
 	public $wattHrSum;
+	public $billCycle;
 
 	/**
 	 * Create a DemandHistory object using the given CostCalculator.
@@ -46,6 +47,7 @@ class DemandHistory extends \Eloquent
 		$this->costPerKw = $calculator->costPerKiloWatt();
 		$this->demandDeltaSecs = $calculator->demandDeltaSeconds();
 		$this->demandDeltaMins = $calculator->demandDeltaMinutes();
+		$this->billCycle = $calculator->getCurrentBillingCycle();
 		$this->sum = 0;
 		$this->wattHrSum = 0;
 	}
@@ -77,16 +79,14 @@ class DemandHistory extends \Eloquent
 	/**
 	 * Set `$start_time` by rounding to the nearest `$this->demandDeltaMins`.
 	 *
-	 * @param bool|true $now Find `$start_time` based on the time now.
+	 * @param \Carbon\Carbon $time Find `$start_time` based on the time now.
 	 * @return void
 	 */
-	public function start($now = true) {
-		if ($now === true) {
-			$this->start_time = Carbon::now()->second(0);
-			$this->start_time->minute(
-				intval($this->start_time->minute / $this->demandDeltaMins)
-				* $this->demandDeltaMins );
-		}
+	public function start($time) {
+        $this->start_time = $time->copy()->second(0);
+        $this->start_time->minute(
+            intval($this->start_time->minute / $this->demandDeltaMins)
+            * $this->demandDeltaMins );
 	}
 
 	/**
@@ -98,12 +98,13 @@ class DemandHistory extends \Eloquent
 		$this->end_time = $this->start_time->copy()
 			->addMinutes($this->demandDeltaMins)
 			->subSecond();
+		$this->billingCycle()->associate($this->billCycle);
 	}
 
 	/**
 	 * Get the BillingCycle associated with this DemandHistory.
 	 *
-	 * @return \App\Model\BillingCycle
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function billingCycle() {
 		return $this->belongsTo('App\Model\BillingCycle');

@@ -65,7 +65,11 @@ class MeterServiceCommand extends Command
         $connection = Redis::connection('pubsub');
         $connection->set(self::METER_PID_KEY, self::$pid);
 
-        self::$meter->meterLoop();
+        try {
+            self::$meter->meterLoop();
+        } catch (ErrorException $e) {
+            printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
 

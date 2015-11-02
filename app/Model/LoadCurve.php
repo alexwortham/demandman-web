@@ -99,7 +99,11 @@ class LoadCurve extends \Eloquent
 	 * @return \App\Model\LoadData The load in watts at the given `$time`.
 	 */
 	public function getDataAt($time) {
-		return $this->load_data[$time];
+		if (array_key_exists($time,$this->load_data)) {
+			return $this->load_data[$time];
+		} else {
+			return NULL;
+		}
 	}
 
 	function simulation() {

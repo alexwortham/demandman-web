@@ -56,4 +56,11 @@ interface CostCalculator
 	public function demandDeltaSeconds();
 
 	public function demandDeltaMinutes();
+
+	/**
+	 * Get the current BillingCycle.
+	 *
+	 * @return \App\Model\BillingCycle
+	 */
+	public function getCurrentBillingCycle();
 }

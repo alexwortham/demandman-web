@@ -26,12 +26,14 @@ class LoadData extends \Eloquent
      * @param $load
      * @return \App\Model\LoadData
      */
-    public static function create(AnalogCurrentMonitor $mon,
+    public static function createLD($mon,
                                   Carbon $time, $load) {
         $data = new LoadData();
         $data->time = $time;
         $data->load = $load;
-        $data->currentMonitor()->associate($mon);
+        if ($mon !== null) {
+            $data->currentMonitor()->associate($mon);
+        }
 
         return $data;
     }

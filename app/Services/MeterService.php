@@ -69,6 +69,7 @@ class MeterService implements Meter
 			}
 		}
 		$this->time = Carbon::now()->second(0);
+		$this->aggregate = new LoadCurve();
 	}
 
 	/**
@@ -106,14 +107,20 @@ class MeterService implements Meter
 	 */
 	public function measure() {
 		$buffer = $this->bufferedAnalog->read();
+		if (!is_array($buffer)) {
+			fprintf(STDERR, "%s\n", $buffer);
+			return;
+		}
 		foreach ($this->activeMonitors as $ain_number => $monitor) {
 			/* @var $monitor \App\Model\AnalogCurrentMonitor */
+			printf("aggregate->setDataAt(%d)\n", $this->time->timestamp);
+			$this->aggregate->setDataAt($this->time, LoadData::createLD(NULL, $this->time, 0));
 			foreach ($buffer[$monitor->ain_number] as $raw_value) {
 				$watts = $monitor->getWatts($raw_value);
 				if ($watts > 0) {
 					$curve = $this->curves[$ain_number];
-					$loadData = LoadData::create($monitor, $this->time, $watts);
-					$curve->addToData($this->time, $loadData);
+					$loadData = LoadData::createLD($monitor, $this->time, $watts);
+					$curve->setDataAt($this->time, $loadData);
 					$this->aggregate->addToData($this->time, $loadData);
 				}
 			}
@@ -123,9 +130,10 @@ class MeterService implements Meter
 	}
 
 	public function meterLoop() {
+		$this->bufferedAnalog->open();
 		if ($this->demandHistory === null) {
 			$this->demandHistory = new DemandHistory($this->calculator);
-			$this->demandHistory->start();
+			$this->demandHistory->start($this->time);
 		}
 		while ($this->meterWait()) {
 			pcntl_signal_dispatch();
@@ -133,15 +141,17 @@ class MeterService implements Meter
                 $this->handle_signal();
             }
 			$this->measure();
+			printf("aggregate->getDataAt(%d)\n", $this->time->timestamp);
 			$agg_load = $this->aggregate->getDataAt($this->time->timestamp);
 			if ( ! $this->demandHistory->updateHistory($agg_load) ) {
 				$this->demandHistory->complete();
 				$this->demandHistory->save();
 				$this->demandHistory = new DemandHistory($this->calculator);
-				$this->demandHistory->start();
+				$this->demandHistory->start($this->time);
 				$this->demandHistory->updateHistory($agg_load);
 			}
 		}
+		$this->bufferedAnalog->close();
 	}
 
 	public function meterWait() {
