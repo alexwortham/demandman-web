@@ -9,5 +9,5 @@ public/docs/
 *.swp
 .idea/
 composer.phar
-phpstorm.meta.php
+.phpstorm.meta.php
 _ide_helper.php
