@@ -5,13 +5,21 @@ namespace App\Console\Commands;
 use Redis;
 use Illuminate\Console\Command;
 use Event;
-use App\Events\AppStartAckEvent;
 use App\Events\AppActionAckEvent;
 use App\Events\AppActionFinEvent;
 use Symfony\Component\Console\Input\InputArgument;
 use App\Services\Meter;
 use ReflectionClass;
 use Exception;
+use \ErrorException;
+
+if (function_exists('pcntl_signal')) {
+	pcntl_signal(SIGUSR2, function ($signo) {
+		$connection = Redis::connection('pubsub');
+        $event = $connection->lpop(MeterServiceCommand::$eventKey);
+        MeterServiceCommand::$meter->setEvent($event);
+	});
+}
 
 class MeterServiceCommand extends Command
 {
@@ -29,17 +37,20 @@ class MeterServiceCommand extends Command
      */
     protected $description = 'Run the meter service for collecting load data.';
 
-    protected $meter;
+    public static $meter;
+    public static $event = NULL;
+    public static $pid = NULL;
+    public static $eventKey = NULL;
+    const METER_PID_KEY = 'meterpid';
 
     /**
      * Create a new command instance.
-     *
-     * @return void
+     * @param Meter $meter
      */
     public function __construct(Meter $meter)
     {
         parent::__construct();
-	$this->meter = $meter;
+	    self::$meter = $meter;
     }
 
     /**
@@ -49,21 +60,14 @@ class MeterServiceCommand extends Command
      */
     public function handle()
     {
-	//$connection = Redis::connection('pubsub');
-	//$connection->get('foo');
-	try {
-		Redis::psubscribe(['dm.response.*'], function($message, $channel) {
-			$chan = explode('.', $channel);
-			$evtType = ucfirst($chan[5]);
-			$data = json_decode($message, true)['data'];
-			$response = $data['actionResponse'];
-		        echo "meter received message: $message\n";
-			call_user_func_array([$this->meter, "app$evtType"],
-				[$response['appId']]);
-		});
-	} catch (Exception $e) {
-	    	printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
-	}
+        self::$pid = posix_getpid();
+        self::$eventKey = 'process:'.self::$pid.':queue';
+        $connection = Redis::connection('pubsub');
+        $connection->set(self::METER_PID_KEY, self::$pid);
+
+        self::$meter->meterLoop();
     }
+
+
 }
 

@@ -26,7 +26,7 @@ class Run extends \Eloquent
 	/**
 	 * Get the LoadCurve associated with this run.
 	 *
-	 * @return \App\Model\LoadCurve The LoadCurve associated with this run.
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function loadCurve() {
 		return $this->belongsTo('App\Model\LoadCurve');

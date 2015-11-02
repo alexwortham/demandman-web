@@ -28,7 +28,12 @@ class AnalogCurrentMonitor extends \Eloquent implements CurrentMonitor
 	 * @inheritdoc
 	 */
 	public function getAmps($raw_value) {
-		return abs($raw_value - $this->bias) * $this->sensitivity;
+		$val = abs($raw_value - $this->bias);
+		if ($val < 5) { //5mV tolerance for 0 point.
+			return 0;
+		} else {
+			return $val * $this->sensitivity;
+		}
 	}
 
 	/**

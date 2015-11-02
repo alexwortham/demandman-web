@@ -25,4 +25,17 @@ interface Meter
 	 * @return boolean True if stopped successfully, false otherwise.
 	 */
 	public function appStop($appId);
+
+	/**
+	 * Set an active event on the meter.
+	 *
+	 * @param mixed $event
+	 * @return mixed
+	 */
+	public function setEvent($event);
+
+	/**
+	 * @return mixed
+	 */
+	public function meterLoop();
 }
