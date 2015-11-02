@@ -140,7 +140,7 @@ class CurveFuncs
 
 		$scaled_curve = array();
 		foreach ($points as $key => $val) {
-			$scaled_curve[strval( doubleval($key) / doubleval($dt) )] = ( round($val / doubleval($dv)) / doubleval($max) );
+			$scaled_curve[strval( doubleval($key) / doubleval($dt) )] = ( round($val / doubleval($dv))  );
 		}
 
 		return $scaled_curve;

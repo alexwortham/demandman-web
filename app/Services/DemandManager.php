@@ -40,9 +40,9 @@ class DemandManager implements Manager
 	}
 
 	public function startAppliance(ActionRequest $request) {
-		$appliance = $this->applianceStore->get($request->applianceId());
-		$predicted_curve = $this->predictor->predictAggregate([$appliance]);
-		$cost = $this->costCalculator->demandCost($predicted_curve);
+		//$appliance = $this->applianceStore->get($request->applianceId());
+		//$predicted_curve = $this->predictor->predictAggregate([$appliance]);
+		//$cost = $this->costCalculator->demandCost($predicted_curve);
 //		if ($cost > $this->getMaxAllowableCost()) {
 //			return false;
 //		} else {

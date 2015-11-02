@@ -7,6 +7,7 @@ use Redis;
 use App\Simulator;
 use Event;
 use App\Events\AppActionResponseEvent;
+use \ErrorException;
 
 if (function_exists('pcntl_signal')) {
 	pcntl_signal(SIGUSR1, function ($signo) {
