@@ -13,8 +13,8 @@
 
 Route::get('/', ['uses' => 'MainController@index']);
 
-Route::get('meter/test/{name}/{bus}/{addr}/{min}/{max}', ['uses' => 'LoadMeterController@test']);
-Route::get('meter/test/{name}/{bus}/{addr}/{min}/{max}/{val}', ['uses' => 'LoadMeterController@set_meter']);
+Route::get('meter/test/{bus}/{addr}/{inc}', ['uses' => 'LoadMeterController@test']);
+Route::get('meter/test/{bus}/{addr}/{inc}/{val}', ['uses' => 'LoadMeterController@set_meter']);
 Route::get('curve/show/{id}', ['uses' => 'LoadCurveController@show']);
 Route::get('curve/edit/{id}', ['uses' => 'LoadCurveController@edit']);
 Route::post('curve/update/{id}', ['as' => 'curve_update', 'uses' => 'LoadCurveController@update']);

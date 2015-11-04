@@ -16,22 +16,25 @@ class LoadMeterController extends Controller {
 	/**
 	 * 
 	 */
-	public function test($name, $bus, $addr, $min, $max) {
+	public function test($bus, $addr, $inc) {
 
-		return view('meter/test', ['name' => $name,
+		$meter = new LoadMeter(intval($bus), intval($addr), intval($inc));
+
+		return view('meter/test', [
 			'bus' => $bus,
 			'addr' => $addr,
-			'min' => $min,
-			'max' => $max]);
+			'min' => $meter->min,
+			'max' => $meter->max,
+			'inc' => $inc]);
 	}
 
 	/**
 	 * 
 	 */
-	public function set_meter($name, $bus, $addr, $min, $max, $val) {
+	public function set_meter($bus, $addr, $inc, $val) {
 
-		$meter = new LoadMeter($name, intval($bus), intval($addr), intval($min), intval($max));
-		$return = $meter->set_load(intval($val));
+		$meter = new LoadMeter(intval($bus), intval($addr), intval($inc));
+		$return = $meter->set_load(doubleval($val));
 		$load = $meter->get_load();
 
 		return "{load: $load}";

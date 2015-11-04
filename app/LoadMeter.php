@@ -67,8 +67,6 @@ class LoadMeter
 	 *
 	 * @param int $bus The i2c bus number of the PCF8574.
 	 * @param int $addr The i2c bus address of the PCF8574.
-	 * @param int $min The minimum value for the meter.
-	 * @param int $max The maximum value for the meter.
 	 * @param int $inc The increment to be displayed per step.
 	 */
 	public function __construct($bus, $addr, $inc) {
@@ -77,7 +75,11 @@ class LoadMeter
 		$this->inc = $inc;
 		$this->value = 0;
 		$this->load = 0;
-		$this->pcf = new PCF8574($bus, $addr);
+		if ($bus >= 0) {
+			$this->pcf = new PCF8574($bus, $addr);
+		} else {
+			$this->pcf = NULL;
+		}
 	}
 
 	/**
@@ -93,7 +95,11 @@ class LoadMeter
 	public function set_load($load) {
 		$this->calc_value($load);
 
-		return $this->pcf->set_range(0, $this->value - 1);
+		if ($this->pcf !== NULL) {
+			return $this->pcf->set_range(0, $this->value - 1);
+		} else {
+			return "No valid PCF8574 is configured for this LoadMeter.";
+		}
 	}
 
 	/**
