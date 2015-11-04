@@ -97,9 +97,13 @@ class MeterService implements Meter
 	 * @inheritdoc
 	 */
 	public function appStart($appId) {
+		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId)->first();
+		$curve = $this->curves[$currentMonitor->ain_number];
+		$curve->save();
 		$run = new Run();
 		$run->is_running = true;
 		$run->appliance_id = $appId;
+		$run->loadCurve()->associate($curve);
 		$run->save();
 	}
 
@@ -109,11 +113,11 @@ class MeterService implements Meter
 	public function appStop($appId) {
 		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId)->first();
 		$curve = $this->curves[$currentMonitor->ain_number];
-		$curve->save();
 		/* @var $run \App\Model\Run */
 		$run = Run::where('appliance_id', $appId)
 			->where('is_running', true)->first();
-		$run->loadCurve()->associate($curve);
+		//$run->loadCurve()->associate($curve);
+		$run->is_running = false;
 		$run->save();
 		$this->curves[$currentMonitor->ain_number] = new LoadCurve();
 		//set stuff on curve?
@@ -135,26 +139,21 @@ class MeterService implements Meter
 		}
 		foreach ($this->activeMonitors as $ain_number => $monitor) {
 			/* @var $monitor \App\Model\AnalogCurrentMonitor */
-			printf("aggregate->setDataAt(%d)\n", $this->time->timestamp);
+			//printf("aggregate->setDataAt(%d)\n", $this->time->timestamp);
 			$this->prev_time = $this->time->copy()->subMinute();
-			$this->aggregate->setDataAtRange(
-				$this->prev_time,
-				$this->time,
-				LoadData::createLD(NULL, $this->time, 0));
+			$this->aggregate->setDataAt($this->prev_time, LoadData::createLD(NULL, NULL, $this->time, 0));
 			foreach ($buffer[$monitor->ain_number] as $raw_value) {
 				$watts = $monitor->getWatts($raw_value);
 				if ($watts > 0) {
-					printf("AIN%d: raw = %.4f; calc = %.4f\n", $ain_number, $raw_value, $watts);
+					//printf("AIN%d: raw = %.4f; calc = %.4f\n", $ain_number, $raw_value, $watts);
 					$curve = $this->curves[$ain_number];
-					$loadData = LoadData::createLD($monitor, $this->time, $watts);
-					$curve->setDataAtRange(
-						$this->prev_time,
-						$this->time,
-						$loadData);
-					$this->aggregate->addToCurve(
-						$this->prev_time,
-						$this->time,
-						$curve);
+					$loadData = LoadData::createLD($monitor, $curve, $this->time, $watts);
+					$curve->setDataAt($this->prev_time,	$loadData);
+					$this->aggregate->addToData($this->prev_time, $loadData);
+					if ($curve->id !== NULL && is_array($curve->load_data) && count($curve->load_data) > 0) {
+						$curve->loadData()->saveMany($curve->load_data);
+						$curve->load_data = array();
+					}
 				}
 			}
 
@@ -174,11 +173,12 @@ class MeterService implements Meter
 		while ($this->meterWait()) {
 			pcntl_signal_dispatch();
             if (self::$event !== NULL) {
+				echo "Meter loop caught event, calling handle_signal()\n".
                 $this->handle_signal();
             }
 			$this->measure();
-			if ( ! $this->demandHistory->updateHistoryWithCurve(
-					$this->prev_time, $this->time, $this->aggregate) ) {
+			$agg_data = $this->aggregate->getDataAt($this->prev_time->timestamp);
+			if ( ! $this->demandHistory->updateHistory($agg_data) ) {
 				$this->demandHistory->complete();
 				$this->demandHistory->save();
 				$this->demandHistory = new DemandHistory($this->calculator);
@@ -216,14 +216,14 @@ class MeterService implements Meter
 	private function handle_signal() {
 
 		//do stuff to handle simulation changes
-		$event = json_decode(self::$event, true);
+		$event = json_decode(json_decode(self::$event, true), true);
 		$action = ucfirst($event['data']['actionResponse']['action']);
 		$appId = $event['data']['actionResponse']['appId'];
         $status = $event['data']['actionResponse']['status'];
 
         //only execute if status is success?
 		try {
-			printf("Call app$action(%d)\n", $appId);
+			printf("MeterService will call \$this -> app$action(%d)\n", $appId);
 			call_user_func_array(array($this, "app$action"),
 				array($appId));
 			self::$event = NULL;

@@ -54,7 +54,7 @@ class Simulation extends \Eloquent
 		//1 is the desired delta t of the distributed curve (1 second)
 		$dist_curve = CurveFuncs::distribute_curve($curve, 0, 1);
 		//60 is the desired delta t of the averaging window.
-		return CurveFuncs::reduce_curve($dist_curve, 60);
+		return array_values(CurveFuncs::reduce_curve($dist_curve, 60));
 	}
 
 	public function reset() {

@@ -65,13 +65,17 @@ class SimulatorCommand extends Command
         $connection = Redis::connection('pubsub');
         $connection->set(self::SIM_PID_KEY, self::$pid);
 
+		try {
             while (true) {
-            pcntl_signal_dispatch();
-            if (self::$event !== NULL) {
-                $this->handle_signal();
-            }
-            self::$simulator->step();
-        }
+				pcntl_signal_dispatch();
+				if (self::$event !== NULL) {
+					$this->handle_signal();
+				}
+				self::$simulator->step();
+			}
+		} catch (ErrorException $e) {
+			printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
+		}
     }
 
 	private function handle_signal() {

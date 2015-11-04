@@ -12,7 +12,7 @@ use \Carbon\Carbon;
  *
  * @property \Carbon\Carbon $time The timestamp for this datum.
  * @property double $load The load measured at this point in time.
- * @property \App\Model\AnalogCurrentMonitor $currentMonitor The
+ * @property \App\Model\AnalogCurrentMonitor $analogCurrentMonitor The
  * @property \App\Model\LoadCurve $loadCurve The LoadCurve associated
  * with this model.
  * AnalogCurrentMonitor which made the measurement contained in this datum.
@@ -26,13 +26,16 @@ class LoadData extends \Eloquent
      * @param $load
      * @return \App\Model\LoadData
      */
-    public static function createLD($mon,
+    public static function createLD($mon, $curve,
                                   Carbon $time, $load) {
         $data = new LoadData();
         $data->time = $time;
         $data->load = $load;
         if ($mon !== null) {
-            $data->currentMonitor()->associate($mon);
+            $data->analogCurrentMonitor()->associate($mon);
+        }
+        if ($curve !== null) {
+            $data->loadCurve()->associate($curve);
         }
 
         return $data;
@@ -42,8 +45,11 @@ class LoadData extends \Eloquent
         $data = new LoadData();
         $data->time = $this->time->copy();
         $data->load = $this->load;
-        if ($this->analog_current_monitor != NULL) {
-            $data->analog_current_monitor = $this->analog_current_monitor;
+        if ($this->analogCurrentMonitor != NULL) {
+            $data->analogCurrentMonitor()->associate($this->analogCurrentMonitor);
+        }
+        if ($this->loadCurve !== NULL) {
+            $data->loadCurve()->associate($this->loadCurve);
         }
 
         return $data;
@@ -70,7 +76,7 @@ class LoadData extends \Eloquent
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function currentMonitor() {
+    public function analogCurrentMonitor() {
         return $this->belongsTo('App\Model\AnalogCurrentMonitor');
     }
 }

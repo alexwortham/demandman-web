@@ -29,7 +29,7 @@ class LoadCurve extends \Eloquent
 	/**
 	 * @var \App\Model\LoadData[] $load_data The load data for this curve.
 	 */
-	protected $load_data = [];
+	public $load_data = [];
 
 	/**
 	 * Parse the curve data stored in this object.
@@ -91,7 +91,7 @@ class LoadCurve extends \Eloquent
 	 */
 	public function setDataAtRange(Carbon $start, Carbon $end, LoadData $data) {
 
-		for ($it = $start->copy(); $it->second < $end->second; $it->addSecond()) {
+		for ($it = $start->copy(); $it->timestamp < $end->timestamp; $it->addSecond()) {
 			$new_data = $data->copyLD();
 			$new_data->time->timestamp($it->timestamp);
 			$this->load_data[$it->timestamp] = $new_data;
@@ -107,7 +107,7 @@ class LoadCurve extends \Eloquent
 	 */
 	public function addToCurve(Carbon $start, Carbon $end, LoadCurve $curve) {
 
-		for ($it = $start->copy(); $it->second < $end->second; $it->addSecond()) {
+		for ($it = $start->copy(); $it->timestamp < $end->timestamp; $it->addSecond()) {
 			$new_data = $curve->getDataAt($it->timestamp);
 			$our_data = $this->getDataAt($it->timestamp);
 			if ($new_data !== NULL) {
@@ -184,9 +184,9 @@ class LoadCurve extends \Eloquent
 	 */
 	public function save(array $options = []) {
 
-		if (is_array($this->load_data) && count($this->load_data) > 0) {
-			$this->loadData()->saveMany($this->load_data);
-		}
+//		if (is_array($this->load_data) && count($this->load_data) > 0) {
+//			$this->loadData()->saveMany($this->load_data);
+//		}
 
 		parent::save($options);
 	}

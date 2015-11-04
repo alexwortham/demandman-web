@@ -99,7 +99,7 @@ class DemandHistory extends \Eloquent
 										   Carbon $end,
 										   LoadCurve $curve) {
 
-		for ($it = $start->copy(); $it->second < $end->second; $it->addSecond()) {
+		for ($it = $start->copy(); $it->timestamp <= $end->timestamp; $it->addSecond()) {
 			$data = $curve->getDataAt($it->timestamp);
 			if ($data !== NULL) {
 				$ret = $this->updateHistory($data);
