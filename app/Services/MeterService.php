@@ -30,8 +30,18 @@ class MeterService implements Meter
 	/** @var int $meter_interval The number of seconds between readings. */
 	public static $meter_interval = 1;
 
+	/**
+	 * An event that needs to be processed by the meter.
+	 *
+	 * If not NULL an event has been set by a signal handler and needs to
+	 * be processed by handle_signal().
+	 *
+	 * @var mixed $event An event that needs to be processed by the meter.
+	 */
 	private static $event = NULL;
 
+	/** @var CostCalculator $calculator CostCalculator used for calculating
+	 * energy costs. */
 	protected $calculator; 
 	/** 
 	 * The active current monitors.
@@ -51,11 +61,21 @@ class MeterService implements Meter
 	/** @var \Carbon\Carbon $time The current time on which measurements are synchronized */
 	private $time;
 
+	/** @var \Carbon\Carbon $time The previous time on which measurements were made */
+	private $prev_time;
+
+	/**
+	 * @var \App\Model\DemandHistory $demandHistory The current DemandHistory
+	 * object being used for tracking demand history.
+	 */
 	private $demandHistory = null;
 
 	/** @var \App\BufferedAnalog $bufferedAnalog Buffer to read from. */
 	private $bufferedAnalog;
 
+	/**
+	 * @param CostCalculator $calculator Injected by Laravel.
+	 */
 	public function __construct(CostCalculator $calculator) {
 		$this->calculator = $calculator;
 		$this->bufferedAnalog = new BufferedAnalog(2048, self::CHANNELS, 30, true);
@@ -69,6 +89,7 @@ class MeterService implements Meter
 			}
 		}
 		$this->time = Carbon::now()->second(0);
+		$this->prev_time = $this->time->copy()->subMinute();
 		$this->aggregate = new LoadCurve();
 	}
 
@@ -106,7 +127,8 @@ class MeterService implements Meter
 	 * @return void
 	 */
 	public function measure() {
-		$buffer = $this->bufferedAnalog->read();
+		//read a single averaged value for each channel.
+		$buffer = $this->bufferedAnalog->read(true);
 		if (!is_array($buffer)) {
 			fprintf(STDERR, "%s\n", $buffer);
 			return;
@@ -114,14 +136,25 @@ class MeterService implements Meter
 		foreach ($this->activeMonitors as $ain_number => $monitor) {
 			/* @var $monitor \App\Model\AnalogCurrentMonitor */
 			printf("aggregate->setDataAt(%d)\n", $this->time->timestamp);
-			$this->aggregate->setDataAt($this->time, LoadData::createLD(NULL, $this->time, 0));
+			$this->prev_time = $this->time->copy()->subMinute();
+			$this->aggregate->setDataAtRange(
+				$this->prev_time,
+				$this->time,
+				LoadData::createLD(NULL, $this->time, 0));
 			foreach ($buffer[$monitor->ain_number] as $raw_value) {
 				$watts = $monitor->getWatts($raw_value);
 				if ($watts > 0) {
+					printf("AIN%d: raw = %.4f; calc = %.4f\n", $ain_number, $raw_value, $watts);
 					$curve = $this->curves[$ain_number];
 					$loadData = LoadData::createLD($monitor, $this->time, $watts);
-					$curve->setDataAt($this->time, $loadData);
-					$this->aggregate->addToData($this->time, $loadData);
+					$curve->setDataAtRange(
+						$this->prev_time,
+						$this->time,
+						$loadData);
+					$this->aggregate->addToCurve(
+						$this->prev_time,
+						$this->time,
+						$curve);
 				}
 			}
 
@@ -129,6 +162,9 @@ class MeterService implements Meter
 		}
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function meterLoop() {
 		$this->bufferedAnalog->open();
 		if ($this->demandHistory === null) {
@@ -141,28 +177,42 @@ class MeterService implements Meter
                 $this->handle_signal();
             }
 			$this->measure();
-			printf("aggregate->getDataAt(%d)\n", $this->time->timestamp);
-			$agg_load = $this->aggregate->getDataAt($this->time->timestamp);
-			if ( ! $this->demandHistory->updateHistory($agg_load) ) {
+			if ( ! $this->demandHistory->updateHistoryWithCurve(
+					$this->prev_time, $this->time, $this->aggregate) ) {
 				$this->demandHistory->complete();
 				$this->demandHistory->save();
 				$this->demandHistory = new DemandHistory($this->calculator);
 				$this->demandHistory->start($this->time);
-				$this->demandHistory->updateHistory($agg_load);
 			}
 		}
 		$this->bufferedAnalog->close();
 	}
 
+	/**
+	 * Wait for 1 second.
+	 *
+	 * Updates `$this->prev_time` and `$this->time` appropriately.
+	 *
+	 * @return bool Returns the result of time_sleep_until().
+	 */
 	public function meterWait() {
+		$this->prev_time = $this->time;
 		$this->time = $this->time->copy()->addMinute();
 		return time_sleep_until(time() + 1);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function setEvent($event) {
 		self::$event = $event;
 	}
 
+	/**
+	 * Process any events detected by meterLoop().
+	 *
+	 * @return void
+	 */
 	private function handle_signal() {
 
 		//do stuff to handle simulation changes

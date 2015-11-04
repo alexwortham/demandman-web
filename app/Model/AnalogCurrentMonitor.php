@@ -25,14 +25,21 @@ use App\CurrentMonitor;
 class AnalogCurrentMonitor extends \Eloquent implements CurrentMonitor
 {
 	/**
+	 * Tolerance range for zero value of the sensor.
+	 *
+	 * Values which are `abs($value) <= ZERO_TOLERANCE` will be
+	 * considered to be `0` read from the sensor.
+	 */
+	const ZERO_TOLERANCE = 5;
+	/**
 	 * @inheritdoc
 	 */
 	public function getAmps($raw_value) {
 		$val = abs($raw_value - $this->bias);
-		if ($val < 5) { //5mV tolerance for 0 point.
+		if ($val <= self::ZERO_TOLERANCE) {
 			return 0;
 		} else {
-			return $val * $this->sensitivity;
+			return $val / $this->sensitivity;
 		}
 	}
 

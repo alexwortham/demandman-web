@@ -82,6 +82,47 @@ class LoadCurve extends \Eloquent
 	}
 
 	/**
+	 * Set data over a specified range of seconds.
+	 *
+	 * @param Carbon $start First time to set.
+	 * @param Carbon $end Ending time (not inclusive).
+	 * @param LoadData $data The LoadData to copy across the range.
+	 * @return void
+	 */
+	public function setDataAtRange(Carbon $start, Carbon $end, LoadData $data) {
+
+		for ($it = $start->copy(); $it->second < $end->second; $it->addSecond()) {
+			$new_data = $data->copyLD();
+			$new_data->time->timestamp($it->timestamp);
+			$this->load_data[$it->timestamp] = $new_data;
+		}
+	}
+
+	/**
+	 * Add a the portion of the given curve from start to end to this curve.
+	 *
+	 * @param Carbon $start Start adding from this time.
+	 * @param Carbon $end Stop adding at end - 1.
+	 * @param LoadCurve $curve The LoadCurve to add.
+	 */
+	public function addToCurve(Carbon $start, Carbon $end, LoadCurve $curve) {
+
+		for ($it = $start->copy(); $it->second < $end->second; $it->addSecond()) {
+			$new_data = $curve->getDataAt($it->timestamp);
+			$our_data = $this->getDataAt($it->timestamp);
+			if ($new_data !== NULL) {
+                if ($our_data === NULL) {
+					$new_data = $new_data->copyLD();
+					$new_data->analog_current_monitor = NULL;
+                    $this->setDataAt($it, $new_data);
+                } else {
+					$this->addToData($it, $new_data);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Add the value `$watts` to the value at time `$time` in this curve.
 	 *
 	 * @param \Carbon\Carbon $time
@@ -106,10 +147,20 @@ class LoadCurve extends \Eloquent
 		}
 	}
 
+	/**
+	 * Get the Simulation associated with this LoadCurve.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
 	function simulation() {
 		return $this->hasOne('App\Model\Simulation');
 	}
 
+	/**
+	 * Get the Run associated with this LoadCurve.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
 	function run() {
 		return $this->hasOne('App\Model\Run');
 	}

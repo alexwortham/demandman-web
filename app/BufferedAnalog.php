@@ -97,9 +97,10 @@ class BufferedAnalog
     /**
      * Return a multidimensional array containing values read from each channel.
      *
+     * @param boolean $avg_all If true return a single averaged value for each channel.
      * @return mixed An array of values or an error string.
      */
-    public function read() {
+    public function read($avg_all = false) {
         $buffer = adc_buffer_read();
         if (!is_array($buffer)) {
             return $buffer;
@@ -110,7 +111,7 @@ class BufferedAnalog
             $values[$i] = array();
         }
 
-        if ($this->avg_length > 1) {
+        if ($avg_all === false && $this->avg_length > 1) {
             foreach ($buffer as $channel => $vals) {
                 $sum = 0;
                 $total = count($vals);
@@ -139,6 +140,12 @@ class BufferedAnalog
 
             $this->last_read = $values;
 
+        } else if ($avg_all !== false) {
+            $avgs = array();
+            foreach ($buffer as $channel => $vals) {
+                $avgs[$channel] = array( CurveFuncs::average($vals) );
+            }
+            $this->last_read = $avgs;
         } else {
             $this->last_read = $buffer;
         }

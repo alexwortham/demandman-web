@@ -26,13 +26,21 @@ use Carbon\Carbon;
  */
 class DemandHistory extends \Eloquent
 {
+	/** @var CostCalculator $calculator CostCalculator used for calculations. */
 	protected $calculator;
+	/** @var int $sum Running sum used for tracking kW usage. */
 	public $sum;
+	/** @var double $costPerKwHr Cost per kwHr. */
 	public $costPerKwHr;
+	/** @var double $costPerKw Cost per Kw. */
 	public $costPerKw;
+	/** @var int $demandDeltaSecs The width of the demand averaging window in secs. */
 	public $demandDeltaSecs;
+	/** @var int $demandDeltaMins The width of the demand averaging window in minutes. */
 	public $demandDeltaMins;
+	/** @var int $wattHrSum Riemann sum used for tracking kWHr usage. */
 	public $wattHrSum;
+	/** @var BillingCycle $billCycle The current BillingCycle. */
 	public $billCycle;
 
 	/**
@@ -71,7 +79,35 @@ class DemandHistory extends \Eloquent
 		$this->usage_charge += ($wattHours / 1000.0) * $this->costPerKwHr;
 		$this->sum += $data->load;
 		$this->demand_charge = 
-			($this->sum / $this->demandDeltaSecs) * $this->costPerKw;
+			($this->sum / $this->demandDeltaSecs) * ($this->costPerKw / 1000.0);
+
+		return true;
+	}
+
+	/**
+	 * Update the demand history with the given curve.
+	 *
+	 * The function returns false if a value is attempted to be set outside
+	 * the `$this->demandDeltaSecs` interval.
+	 *
+	 * @param Carbon $start
+	 * @param Carbon $end
+	 * @param LoadCurve $curve
+	 * @return boolean True if successful, false otherwise.
+	 */
+	public function updateHistoryWithCurve(Carbon $start,
+										   Carbon $end,
+										   LoadCurve $curve) {
+
+		for ($it = $start->copy(); $it->second < $end->second; $it->addSecond()) {
+			$data = $curve->getDataAt($it->timestamp);
+			if ($data !== NULL) {
+				$ret = $this->updateHistory($data);
+				if ($ret === false) {
+					return false;
+				}
+			}
+		}
 
 		return true;
 	}

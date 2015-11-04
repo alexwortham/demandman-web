@@ -38,6 +38,17 @@ class LoadData extends \Eloquent
         return $data;
     }
 
+    public function copyLD() {
+        $data = new LoadData();
+        $data->time = $this->time->copy();
+        $data->load = $this->load;
+        if ($this->analog_current_monitor != NULL) {
+            $data->analog_current_monitor = $this->analog_current_monitor;
+        }
+
+        return $data;
+    }
+
     /**
      * @param \App\Model\LoadData $data A value to add to the current load.
      */

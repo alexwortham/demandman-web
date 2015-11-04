@@ -30,12 +30,15 @@ interface Meter
 	 * Set an active event on the meter.
 	 *
 	 * @param mixed $event
-	 * @return mixed
+	 * @return void
 	 */
 	public function setEvent($event);
 
 	/**
-	 * @return mixed
+	 * Execute the loop to take and record measurements from the
+	 * analog sensors.
+	 *
+	 * @return void
 	 */
 	public function meterLoop();
 }
