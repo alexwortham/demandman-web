@@ -20,6 +20,8 @@ use \Carbon\Carbon;
 class LoadData extends \Eloquent
 {
 
+    protected $dates = ['time'];
+
     /**
      * @param \App\Model\AnalogCurrentMonitor $mon
      * @param Carbon $time

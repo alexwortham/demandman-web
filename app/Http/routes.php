@@ -25,7 +25,10 @@ Route::get('appliance/{id}/stop', ['as' => 'appliance_stop', 'uses' => 'Applianc
 Route::get('appliance/{id}/pause', ['as' => 'appliance_pause', 'uses' => 'ApplianceController@pause']);
 Route::get('appliance/{id}/wake', ['as' => 'appliance_wake', 'uses' => 'ApplianceController@wake']);
 Route::get('appliance/{id}/resume', ['as' => 'appliance_resume', 'uses' => 'ApplianceController@resume']);
+Route::get('run/{id}/live', ['as' => 'run.live', 'uses' => 'RunController@live']);
+Route::get('run/{id}/live/{since}', ['as' => 'run.live', 'uses' => 'RunController@liveUpdate']);
 
 Route::resource('appliance', 'ApplianceController');
 Route::resource('sensor', 'SensorController');
 Route::resource('curve', 'LoadCurveController');
+Route::resource('run', 'RunController');
