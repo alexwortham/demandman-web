@@ -48,7 +48,7 @@ class MeterService implements Meter
 	 *
 	 * Indexed by `$currentMonitor->appliance->id`.
 	 * 
-	 * @var \App\CurrentMonitor[] $activeMonitors The active current monitors
+	 * @var \App\Model\AnalogCurrentMonitor[] $activeMonitors The active current monitors
 	 */
 	private $activeMonitors;
 
@@ -98,6 +98,8 @@ class MeterService implements Meter
 	 */
 	public function appStart($appId) {
 		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId)->first();
+		$currentMonitor = $this->activeMonitors[$currentMonitor->ain_number];
+		$currentMonitor->is_active = true;
 		$curve = $this->curves[$currentMonitor->ain_number];
 		$curve->save();
 		$run = new Run();
@@ -112,6 +114,8 @@ class MeterService implements Meter
 	 */
 	public function appStop($appId) {
 		$currentMonitor = AnalogCurrentMonitor::where('appliance_id', $appId)->first();
+		$currentMonitor = $this->activeMonitors[$currentMonitor->ain_number];
+		$currentMonitor->is_active = false;
 		$curve = $this->curves[$currentMonitor->ain_number];
 		/* @var $run \App\Model\Run */
 		$run = Run::where('appliance_id', $appId)
@@ -144,7 +148,7 @@ class MeterService implements Meter
 			$this->aggregate->setDataAt($this->prev_time, LoadData::createLD(NULL, NULL, $this->time, 0));
 			foreach ($buffer[$monitor->ain_number] as $raw_value) {
 				$watts = $monitor->getWatts($raw_value);
-				if ($watts > 0) {
+				if ($monitor->is_active === true) {
 					//printf("AIN%d: raw = %.4f; calc = %.4f\n", $ain_number, $raw_value, $watts);
 					$curve = $this->curves[$ain_number];
 					$loadData = LoadData::createLD($monitor, $curve, $this->time, $watts);

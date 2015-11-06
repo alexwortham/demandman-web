@@ -31,6 +31,10 @@ class AnalogCurrentMonitor extends \Eloquent implements CurrentMonitor
 	 * considered to be `0` read from the sensor.
 	 */
 	const ZERO_TOLERANCE = 5;
+
+	/** @var boolean True if this monitor is active. */
+	public $is_active;
+
 	/**
 	 * @inheritdoc
 	 */

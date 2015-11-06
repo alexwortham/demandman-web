@@ -15,4 +15,17 @@
 @stop
 
 @section('body_post')
+	<script>
+		(function($){
+			$(function() {
+				$('a.btn-success').each(function(i,el){
+					$(this).click(function(event) {
+						event.preventDefault();
+						$.get($(this).attr('href'));
+					});
+				});
+			});
+		})(jQuery);
+
+	</script>
 @stop
