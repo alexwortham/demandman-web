@@ -87,13 +87,14 @@ class LoadCurve extends \Eloquent
 	 * @param Carbon $start First time to set.
 	 * @param Carbon $end Ending time (not inclusive).
 	 * @param LoadData $data The LoadData to copy across the range.
+	 * @param int $delta The delta in seconds to move across the range.
 	 * @return void
 	 */
-	public function setDataAtRange(Carbon $start, Carbon $end, LoadData $data) {
+	public function setDataAtRange(Carbon $start, Carbon $end, LoadData $data, $delta = 1) {
 
-		for ($it = $start->copy(); $it->timestamp < $end->timestamp; $it->addSecond()) {
+		for ($it = $start->copy(); $it->timestamp < $end->timestamp; $it->addSeconds($delta)) {
 			$new_data = $data->copyLD();
-			$new_data->time->timestamp($it->timestamp);
+			$new_data->time = $it->copy();
 			$this->load_data[$it->timestamp] = $new_data;
 		}
 	}
@@ -104,10 +105,11 @@ class LoadCurve extends \Eloquent
 	 * @param Carbon $start Start adding from this time.
 	 * @param Carbon $end Stop adding at end - 1.
 	 * @param LoadCurve $curve The LoadCurve to add.
+	 * @param int $delta The delta in seconds to move across the range.
 	 */
-	public function addToCurve(Carbon $start, Carbon $end, LoadCurve $curve) {
+	public function addToCurve(Carbon $start, Carbon $end, LoadCurve $curve, $delta = 1) {
 
-		for ($it = $start->copy(); $it->timestamp < $end->timestamp; $it->addSecond()) {
+		for ($it = $start->copy(); $it->timestamp < $end->timestamp; $it->addSeconds($delta)) {
 			$new_data = $curve->getDataAt($it->timestamp);
 			$our_data = $this->getDataAt($it->timestamp);
 			if ($new_data !== NULL) {

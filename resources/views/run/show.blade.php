@@ -41,7 +41,7 @@
                 // Category
                 var categoryAxis = chart.categoryAxis;
                 categoryAxis.parseDates = true; // in order char to understand dates, we should set parseDates to true
-                categoryAxis.minPeriod = "mm"; // as we have data with minute interval, we have to set "mm" here.
+                categoryAxis.minPeriod = "ss"; // as we have data with minute interval, we have to set "mm" here.
                 categoryAxis.gridAlpha = 0.07;
                 categoryAxis.axisColor = "#DADADA";
 
@@ -106,7 +106,7 @@
                                         load: data[i].load});
                                     chart.validateData();
                                 }
-                                latest = new Date(data[len - 1].time);
+                                latest = new Date(data[data.length - 1].time);
                                 chartTimeout = 0;
                             } else {
                                 chartTimeout++;
