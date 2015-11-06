@@ -81,7 +81,7 @@ class MeterService implements Meter
 		$this->bufferedAnalog = new BufferedAnalog(2048, self::CHANNELS, 30, true);
 		$this->curves = array();
 		for ($c = 1, $i = 0; $c <= 128; $c *= 2, $i++) {
-			if ($c & self::CHANNELS > 0) {
+			if (($c & self::CHANNELS) > 0) {
 				$cm = AnalogCurrentMonitor::where('ain_number', $i)->first();
 				$this->activeMonitors[$i] = $cm;
 				$this->curves[$i] = new LoadCurve();
