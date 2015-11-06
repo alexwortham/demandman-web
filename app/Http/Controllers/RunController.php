@@ -5,6 +5,7 @@
  */
 namespace App\Http\Controllers;
 
+use App\Model\Simulation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -68,18 +69,23 @@ class RunController extends Controller
      */
     public function show($id)
     {
-        return view('run/show', ['run' => Run::find($id), 'live' => false]);
+        $run = Run::find($id);
+        $sim = Simulation::where('appliance_id', $run->appliance_id)->first();
+        $curve = LoadCurve::find($sim->load_curve_id);
+        return view('run/show', ['run' => $run, 'curve' => $curve, 'live' => false]);
     }
 
     public function live($id)
     {
         $run = Run::find($id);
+        $sim = Simulation::where('appliance_id', $run->appliance_id)->first();
+        $curve = LoadCurve::find($sim->load_curve_id);
         $latestData = LoadData::where('load_curve_id', $run->load_curve_id)->get()->last();
         $latest = 0;
         if ($latestData !== NULL) {
             $latest = $latestData->time;
         }
-        return view('run/show', ['run' => $run,
+        return view('run/show', ['run' => $run, 'curve' => $curve,
             'live' => true, 'since' => $latest]);
     }
 

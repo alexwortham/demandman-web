@@ -4,17 +4,17 @@
 <div class="page-header">
 	<h1>{{ $curve->name }}</h1>
 </div>
-<div id="chartdiv" style="width: 100%; height: 400px;"></div>
+<div id="chart1div" style="width: 100%; height: 400px;"></div>
 <a href="{{ action('LoadCurveController@edit', $curve->id) }}" class="btn btn-lg btn-primary">Edit</a>
 @stop
 
 @section('body_post')
-{!! Html::script('js/amcharts/amcharts.js') !!}
-{!! Html::script('js/amcharts/xy.js') !!}
+{!! Html::script('js/amchart1s/amchart1s.js') !!}
+{!! Html::script('js/amchart1s/xy.js') !!}
 <script>
-            var chart;
+            var chart1;
 
-            var chartData = [
+            var chart1Data = [
 		@foreach($curve->parse_data() as $point)
                 {
                     "ax": {{ $point[0] }},
@@ -25,10 +25,10 @@
 
             AmCharts.ready(function () {
                 // XY CHART
-                chart = new AmCharts.AmXYChart();
+                chart1 = new AmCharts.AmXYChart();
 
-                chart.dataProvider = chartData;
-                chart.startDuration = 1;
+                chart1.dataProvider = chart1Data;
+                chart1.startDuration = 1;
 
                 // AXES
                 // X
@@ -38,7 +38,7 @@
                 xAxis.dashLength = 1;
                 xAxis.axisAlpha = 0;
                 xAxis.autoGridCount = true;
-                chart.addValueAxis(xAxis);
+                chart1.addValueAxis(xAxis);
 
                 // Y
                 var yAxis = new AmCharts.ValueAxis();
@@ -47,7 +47,7 @@
                 yAxis.dashLength = 1;
                 yAxis.axisAlpha = 0;
                 yAxis.autoGridCount = true;
-                chart.addValueAxis(yAxis);
+                chart1.addValueAxis(yAxis);
 
                 // GRAPHS
                 // triangles up
@@ -58,21 +58,21 @@
                 graph1.yField = "ay";
                 graph1.lineAlpha = 0;
                 graph1.bullet = "circle";
-                chart.addGraph(graph1);
+                chart1.addGraph(graph1);
 
                 // CURSOR
-                var chartCursor = new AmCharts.ChartCursor();
-                chart.addChartCursor(chartCursor);
+                var chart1Cursor = new AmCharts.ChartCursor();
+                chart1.addChartCursor(chart1Cursor);
 
                 // SCROLLBAR
 
-                var chartScrollbar = new AmCharts.ChartScrollbar();
-                chartScrollbar.scrollbarHeight = 5;
-                chartScrollbar.offset = 15
-                chart.addChartScrollbar(chartScrollbar);
+                var chart1Scrollbar = new AmCharts.ChartScrollbar();
+                chart1Scrollbar.scrollbarHeight = 5;
+                chart1Scrollbar.offset = 15
+                chart1.addChartScrollbar(chart1Scrollbar);
 
                 // WRITE
-                chart.write("chartdiv");
+                chart1.write("chart1div");
             });
         </script>
 @stop
