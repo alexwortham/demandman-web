@@ -16,7 +16,7 @@
             var chart;
 
             var chartData = [
-		@foreach($run->loadCurve->loadData as $point)
+		@foreach($smoothed->load_data as $point)
                 {
                     "date": new Date("{{ $point->time }}"),
                     "load": {{ $point->load }},
@@ -27,10 +27,10 @@
             var chart1;
 
             var chart1Data = [
-		@foreach($curve->parse_data() as $point)
+		@foreach($curve as $key => $val)
                 {
-                    "ax": {{ $point[0]/60 }},
-                    "ay": {{ $point[1] }},
+                    "ax": {{ $key }},
+                    "ay": {{ $val }},
                 },
 		@endforeach
             ];

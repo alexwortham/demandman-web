@@ -35,7 +35,7 @@ class CurveFuncs
 		$size = count($vals);
 		for ($i = 0; $i < $size; $i += $dt) {
 			$period = array_slice($vals, $i, $dt);
-			$avg = self::average($period);
+			$avg = self::get_max($period);
 			$new_curve[strval($i)] = $avg;
 		}
 

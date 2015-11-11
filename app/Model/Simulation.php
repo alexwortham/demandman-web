@@ -49,7 +49,7 @@ class Simulation extends \Eloquent
 		return false;
 	}
 
-	private function get_sim_curve() {
+	public function get_sim_curve() {
 		$curve = $this->loadCurve->parse_data();
 		//1 is the desired delta t of the distributed curve (1 second)
 		$dist_curve = CurveFuncs::distribute_curve($curve, 0, 1);
