@@ -170,6 +170,7 @@ class MeterService implements Meter
 	 */
 	public function meterLoop() {
 		$this->bufferedAnalog->open();
+		$this->measureBiases();
 		if ($this->demandHistory === null) {
 			$this->demandHistory = new DemandHistory($this->calculator);
 			$this->demandHistory->start($this->time);
@@ -190,6 +191,34 @@ class MeterService implements Meter
 			}
 		}
 		$this->bufferedAnalog->close();
+	}
+
+	public function measureBiases() {
+		$bias_avgs = array();
+		foreach ($this->activeMonitors as $ain_number => $monitor) {
+			$bias_avgs[$ain_number] = 0;
+		}
+		$num_samples = 5;
+		for ($i = 0; $i < $num_samples; $i++) {
+
+            $buffer = $this->bufferedAnalog->read(true);
+            if (!is_array($buffer)) {
+                fprintf(STDERR, "%s\n", $buffer);
+                return;
+            }
+            foreach ($this->activeMonitors as $ain_number => $monitor) {
+                /* @var $monitor \App\Model\AnalogCurrentMonitor */
+				foreach ($buffer[$monitor->ain_number] as $raw_value) {
+					$bias_avgs[$monitor->ain_number] += $raw_value;
+				}
+            }
+			time_sleep_until(time() + 1);
+		}
+		foreach ($bias_avgs as $ain_number => $sum) {
+			$monitor = $this->activeMonitors[$ain_number];
+			$monitor->bias = $sum / $num_samples;
+			$monitor->save();
+		}
 	}
 
 	/**
