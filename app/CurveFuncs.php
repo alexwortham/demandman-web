@@ -35,6 +35,25 @@ class CurveFuncs
 		$size = count($vals);
 		for ($i = 0; $i < $size; $i += $dt) {
 			$period = array_slice($vals, $i, $dt);
+			$avg = self::average($period);
+			$new_curve[strval($i)] = $avg;
+		}
+
+		return $new_curve;
+	}
+
+	/**
+	 * Calculate the peak value over a specified delta.
+	 *
+	 * @param int[]|double[] $vals An array of numbers.
+	 * @param int $dt A delta to peakify.
+	 * @return int[]|double[] An array of peak values.
+	 */
+	public static function peakify($vals, $dt) {
+		$new_curve = array();
+		$size = count($vals);
+		for ($i = 0; $i < $size; $i += $dt) {
+			$period = array_slice($vals, $i, $dt);
 			$avg = self::get_max($period);
 			$new_curve[strval($i)] = $avg;
 		}

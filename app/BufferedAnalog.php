@@ -122,7 +122,7 @@ class BufferedAnalog
                     for ($i = 0; $i < ($this->avg_length * $num_vals); $i++) {
                         if (($i % $this->avg_length == ($this->avg_length - 1))) {
                             $sum += $vals[$i];
-                            $values[$channel][] = intval(round( doubleval($sum) / $this->avg_length));
+                            $values[$channel][] = doubleval($sum) / $this->avg_length;
                             $sum = 0;
                         } else {
                             $sum += $vals[$i];
@@ -134,7 +134,7 @@ class BufferedAnalog
                     for (; $i < $total; $i++) {
                         $sum += $vals[$i];
                     }
-                    $values[$channel][] = intval(round( doubleval($sum) / $remainder));
+                    $values[$channel][] = doubleval($sum) / $remainder;
                 }
             }
 
@@ -155,7 +155,7 @@ class BufferedAnalog
             foreach ($this->last_read as $channel => $vals) {
                 $mv_vals = array();
                 foreach ($vals as $key => $val) {
-                    $mv_vals[] = intval(round(($val / self::RAW_RANGE) * self::MV_RANGE));
+                    $mv_vals[] = (doubleval($val) / self::RAW_RANGE) * self::MV_RANGE;
                 }
                 $mv_values[] = $mv_vals;
             }

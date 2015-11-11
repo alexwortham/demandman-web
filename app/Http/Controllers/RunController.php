@@ -71,37 +71,24 @@ class RunController extends Controller
     {
         $run = Run::find($id);
         $sim = Simulation::where('appliance_id', $run->appliance_id)->first();
-        $curve = LoadCurve::find($sim->load_curve_id);
+        $curve = LoadCurve::with('loadData')->find($run->load_curve_id);
         $sim_curve = $sim->get_sim_curve();
-        $prev_load = 0;
-        $smoothed = new LoadCurve();
-        $alpha = 0.1;
-        foreach ($run->loadCurve->loadData as $point) {
-            /* @var \App\Model\LoadData $point */
-            if (abs($point->load - $prev_load) >= 500) {
-                $prev_load = $point->load;
-                $smoothed->setDataAt($point->time, $point->copyLD());
-            } else {
-                $prev_load = $alpha * $point->load + (1 - $alpha) * $prev_load;
-                $newPt = $point->copyLD();
-                $newPt->load = $prev_load;
-                $smoothed->setDataAt($point->time, $newPt);
-            }
-        }
-        return view('run/show', ['run' => $run, 'smoothed' => $smoothed, 'curve' => $sim_curve, 'live' => false]);
+        return view('run/show', ['run' => $run, 'smoothed' => $curve, 'curve' => $sim_curve, 'live' => false]);
     }
 
     public function live($id)
     {
         $run = Run::find($id);
         $sim = Simulation::where('appliance_id', $run->appliance_id)->first();
-        $curve = LoadCurve::find($sim->load_curve_id);
+        $curve = LoadCurve::with('loadData')->find($run->load_curve_id);
+        $sim_curve = $sim->get_sim_curve();
         $latestData = LoadData::where('load_curve_id', $run->load_curve_id)->get()->last();
         $latest = 0;
         if ($latestData !== NULL) {
             $latest = $latestData->time;
         }
-        return view('run/show', ['run' => $run, 'curve' => $curve, 'smoothed' => new LoadCurve(),
+        return view('run/show', ['run' => $run, 'curve' => $sim_curve,
+            'smoothed' => $curve,
             'live' => true, 'since' => $latest]);
     }
 
