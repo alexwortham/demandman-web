@@ -16,7 +16,7 @@
             var chart;
 
             var chartData = [
-		@foreach($smoothed->load_data as $point)
+		@foreach($smoothed->loadData as $point)
                 {
                     "date": new Date("{{ $point->time }}"),
                     "load": {{ $point->load }},

@@ -17,6 +17,11 @@ use \Carbon\Carbon;
  */
 class LoadCurve extends \Eloquent
 {
+	const SMOOTHING_ENABLED = true;
+	const SMOOTHING_DISABLED = false;
+	const SMOOTHING_FACTOR = 0.1;
+	const SMOOTHING_THRESH = 500;
+
 	/**
 	 * @var string $table The name of the load curves table: 'load_curves'.
 	 */
@@ -30,6 +35,12 @@ class LoadCurve extends \Eloquent
 	 * @var \App\Model\LoadData[] $load_data The load data for this curve.
 	 */
 	public $load_data = [];
+
+	/** @var bool $smoothing True if data added to the curve should be smoothed. */
+	public $smoothing = self::SMOOTHING_ENABLED;
+
+	/** @var int $prev_load The load of the most recently added point. */
+	private $prev_load = 0;
 
 	/**
 	 * Parse the curve data stored in this object.
@@ -78,7 +89,30 @@ class LoadCurve extends \Eloquent
 	 * @param \App\Model\LoadData $data The value to set at `$time`.
 	 */
 	public function setDataAt(Carbon $time, LoadData $data) {
+		if ($this->smoothing === self::SMOOTHING_ENABLED) {
+			$this->expAverage($data);
+		}
 		$this->load_data[$time->timestamp] = $data;
+	}
+
+	/**
+	 * Apply a specialized exponential averaging to the given data.
+	 *
+	 * Vanilla exponential averaging but the initial value is reset
+	 * whenever the difference in the current and previous loads
+	 * exceeds self::SMOOTHING_THRESH.
+	 *
+	 * @param LoadData $data
+	 * @return void
+	 */
+	private function expAverage(LoadData $data) {
+		if (abs($data->load - $this->prev_load) >= self::SMOOTHING_THRESH) {
+			$this->prev_load = $data->load;
+		} else {
+			$this->prev_load = self::SMOOTHING_FACTOR * $data->load
+				+ (1 - self::SMOOTHING_FACTOR) * $this->prev_load;
+			$data->load = $this->prev_load;
+		}
 	}
 
 	/**
