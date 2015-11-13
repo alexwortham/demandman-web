@@ -27,7 +27,7 @@ class LCD {
         if ($clear !== false) {
             $this->clear();
         }
-        lcd_print($string);
+        return lcd_print($string);
     }
 
     public function open() {
@@ -39,72 +39,72 @@ class LCD {
     }
 
     public function home() {
-        lcd_home();
+        return lcd_home();
     }
 
     public function clear() {
-        lcd_clear();
+        return lcd_clear();
     }
 
     public function setCursor($col, $row) {
         if ($col <= self::COLS && $row <= self::ROWS) {
-            lcd_set_cursor_position($col, $row);
+            return lcd_set_cursor_position($col, $row);
         }
     }
 
     public function backlight() {
-        lcd_set_backlight(self::ON);
+        return lcd_set_backlight(self::ON);
     }
 
     public function noBacklight() {
-        lcd_set_backlight(self::OFF);
+        return lcd_set_backlight(self::OFF);
     }
 
     public function display() {
-        lcd_set_display(self::ON);
+        return lcd_set_display(self::ON);
     }
 
     public function noDisplay() {
-        lcd_set_display(self::OFF);
+        return lcd_set_display(self::OFF);
     }
 
     public function blink() {
-        lcd_set_blink(self::ON);
+        return lcd_set_blink(self::ON);
     }
 
     public function noBlink() {
-        lcd_set_blink(self::OFF);
+        return lcd_set_blink(self::OFF);
     }
 
     public function cursor() {
-        lcd_set_cursor(self::ON);
+        return lcd_set_cursor(self::ON);
     }
 
     public function noCursor() {
-        lcd_set_cursor(self::OFF);
+        return lcd_set_cursor(self::OFF);
     }
 
     public function autoscroll() {
-        lcd_set_autoscroll(self::ON);
+        return lcd_set_autoscroll(self::ON);
     }
 
     public function noAutoscroll() {
-        lcd_set_autoscroll(self::OFF);
+        return lcd_set_autoscroll(self::OFF);
     }
 
     public function scrollDisplayLeft() {
-        lcd_scroll_display(self::SCROLL_LEFT);
+        return lcd_scroll_display(self::SCROLL_LEFT);
     }
 
     public function scrollDisplayRight() {
-        lcd_scroll_display(self::SCROLL_RIGHT);
+        return lcd_scroll_display(self::SCROLL_RIGHT);
     }
 
     public function leftToRight() {
-        lcd_set_direction(self::LEFT2RIGHT);
+        return lcd_set_direction(self::LEFT2RIGHT);
     }
 
     public function rightToLeft() {
-        lcd_set_direction(self::RIGHT2LEFT);
+        return lcd_set_direction(self::RIGHT2LEFT);
     }
 }
