@@ -76,6 +76,19 @@ class RunController extends Controller
         return view('run/show', ['run' => $run, 'smoothed' => $curve, 'curve' => $sim_curve, 'live' => false]);
     }
 
+    public function data($id)
+    {
+        $run = Run::find($id);
+        $sim = Simulation::where('appliance_id', $run->appliance_id)->first();
+        $curve = LoadCurve::with('loadData')->find($run->load_curve_id);
+        $sim_curve = $sim->get_sim_curve();
+        $run_curve = array();
+        foreach ($curve->loadData as $point) {
+            $run_curve[] = $point->load;
+        }
+        return view('run/data', ['run' => $run, 'smoothed' => $run_curve, 'curve' => $sim_curve]);
+    }
+
     public function live($id)
     {
         $run = Run::find($id);
