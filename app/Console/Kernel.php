@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
 //        \App\Console\Commands\PcntlTest::class,
         \App\Console\Commands\DaemonCommand::class,
         \App\Console\Commands\SimulatorCommand::class,
+        \App\Console\Commands\MeterServiceCommand::class,
     ];
 
     /**
