@@ -55,6 +55,8 @@ class CurveFuncs
 		for ($i = 0; $i < $size; $i += $dt) {
 			$period = array_slice($vals, $i, $dt);
 			$avg = self::get_max($period);
+			$avg = (round(($avg / 1000) * 2) / 2) * 1000;
+			$avg = ($avg > 4000) ? 4000 : $avg;
 			$new_curve[strval($i)] = $avg;
 		}
 
