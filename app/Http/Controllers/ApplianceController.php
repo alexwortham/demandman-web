@@ -126,6 +126,23 @@ class ApplianceController extends Controller {
 		}
 	}
 
+	public function control() {
+		$appliances = Appliance::all();
+		return view('control', ['appliances' => $appliances]);
+	}
+
+	public function circuit($id, $state) {
+		$appliance = Appliance::find($id);
+
+		if ($state == "open") {
+			$appliance->circuit->open();
+		} else if ($state == "close") {
+			$appliance->circuit->close();
+		}
+
+		return '{"status":"ok"}';
+	}
+
   /**
    * Show the form for creating a new resource.
    *

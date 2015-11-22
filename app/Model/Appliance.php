@@ -55,4 +55,8 @@ class Appliance extends \Eloquent {
 	public function currentMonitor() {
 		return $this->hasOne('App\Model\AnalogCurrentMonitor');
 	}
+
+	public function circuit() {
+		return $this->hasOne('App\Model\Circuit');
+	}
 }
