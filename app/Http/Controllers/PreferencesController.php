@@ -19,7 +19,7 @@ class PreferencesController extends Controller {
      */
     public function index()
     {
-        return view('preferences/index');
+        return view('preferences/index', ['preferences' => UserPreference::all()]);
     }
 
     /**
