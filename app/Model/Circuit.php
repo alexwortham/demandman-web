@@ -30,6 +30,11 @@ class Circuit extends \Eloquent {
         $this->pcf->unset_pin($this->mask);
     }
 
+    public function isOpen() {
+        $this->setupPcf();
+        return $this->pcf->read_pin($this->mask);
+    }
+
     private function setupPcf() {
         if ($this->pcf === NULL) {
             $this->pcf = new PCF8574($this->bus, $this->addr);
