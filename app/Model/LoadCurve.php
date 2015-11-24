@@ -88,8 +88,8 @@ class LoadCurve extends \Eloquent
 	 * @param \Carbon\Carbon $time A Unix timestamp.
 	 * @param \App\Model\LoadData $data The value to set at `$time`.
 	 */
-	public function setDataAt(Carbon $time, LoadData $data) {
-		if ($this->smoothing === self::SMOOTHING_ENABLED) {
+	public function setDataAt(Carbon $time, LoadData $data, $noSmoothing = false) {
+		if ($noSmoothing !== true && $this->smoothing === self::SMOOTHING_ENABLED) {
 			$this->expAverage($data);
 		}
 		$this->load_data[$time->timestamp] = $data;

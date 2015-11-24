@@ -9,10 +9,12 @@ namespace App\Services;
 
 use App\ActionRequest;
 use App\ActionResponse;
+use App\Model\UserPreference;
 use App\Services\Analyzer;
 use App\Services\CostCalculator;
 use App\Services\Predictor;
 use App\Services\ApiMessenger;
+use \Carbon\Carbon;
 
 /**
  * Decides if appliances are allowed to run.
@@ -40,15 +42,14 @@ class DemandManager implements Manager
 	}
 
 	public function startAppliance(ActionRequest $request) {
-		//$appliance = $this->applianceStore->get($request->applianceId());
-		//$predicted_curve = $this->predictor->predictAggregate([$appliance]);
-		//$cost = $this->costCalculator->demandCost($predicted_curve);
-//		if ($cost > $this->getMaxAllowableCost()) {
-//			return false;
-//		} else {
-//			return true;
-//		}
-		return true;
+		$appliance = $this->applianceStore->get($request->applianceId());
+		$startTime = $request->getStartTime();
+		$predicted_demand = $this->predictor->predictAggregate($startTime, $appliance);
+		if ($predicted_demand->watts > $this->getMaxAllowableDemand()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public function stopAppliance(ActionRequest $request) {
@@ -68,7 +69,10 @@ class DemandManager implements Manager
 	}
 
 	public function getMaxAllowableDemand() {
+		$maxDemand = UserPreference::where('name','demand.threshold')
+			->first()->value;
 
+		return doubleval($maxDemand);
 	}
 
 	public function getMaxAllowableCost() {

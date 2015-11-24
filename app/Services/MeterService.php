@@ -13,6 +13,7 @@ use App\Model\Run;
 use App\Model\LoadCurve;
 use \Carbon\Carbon;
 use \ErrorException;
+use Redis;
 
 /**
  * An implementation of the Meter service interface.
@@ -73,6 +74,8 @@ class MeterService implements Meter
 	/** @var \App\BufferedAnalog $bufferedAnalog Buffer to read from. */
 	private $bufferedAnalog;
 
+	private $redis;
+
 	/**
 	 * @param CostCalculator $calculator Injected by Laravel.
 	 */
@@ -91,6 +94,7 @@ class MeterService implements Meter
 		$this->time = Carbon::now()->second(0);
 		$this->prev_time = $this->time->copy()->subMinute();
 		$this->aggregate = new LoadCurve();
+		$this->redis = Redis::connection('pubsub');
 	}
 
 	/**
@@ -231,6 +235,7 @@ class MeterService implements Meter
 	public function meterWait() {
 		$this->prev_time = $this->time;
 		$this->time = $this->time->copy()->addMinute();
+		$this->redis->set('simulation:time', $this->time);
 		return time_sleep_until(time() + 1);
 	}
 

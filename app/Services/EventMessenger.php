@@ -13,6 +13,7 @@ use App\Model\AppActionResponse;
 use App\Events\AppActionRequestEvent;
 use App\Events\AppActionResponseEvent;
 
+use Carbon\Carbon;
 use Event;
 use Redis;
 
@@ -39,9 +40,11 @@ class EventMessenger implements ApiMessenger
 	 * @return \App\ActionRequest A new ActionRequest instance.
 	 */
 	public function createRequest(Appliance $app, $action) {
+		$redis = Redis::connection('pubsub');
 		$actionRequest = new AppActionRequest();
 		$actionRequest->appId = $app->id;
 		$actionRequest->action = $action;
+		$actionRequest->started_at = Carbon::parse($redis->get('simulation:time'));
 		$actionRequest->save();
 
 		return $actionRequest;

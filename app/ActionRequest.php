@@ -58,4 +58,9 @@ interface ActionRequest
 	 * @return int The appliance id.
 	 */
 	public function applianceId();
+
+	/**
+	 * @return \Carbon\Carbon The time the appliance wants to start.
+	 */
+	public function getStartTime();
 }

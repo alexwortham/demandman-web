@@ -14,7 +14,7 @@ interface ApplianceStore
 	 * Retrive an appliance from the storage backend by its id.
 	 *
 	 * @param mixed $appId The id of an appliance.
-	 * @return App\Appliance An Appliance object.
+	 * @return \App\Model\Appliance An Appliance object.
 	 */
 	public function get($appId);
 }

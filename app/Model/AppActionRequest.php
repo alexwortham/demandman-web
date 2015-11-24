@@ -66,4 +66,7 @@ class AppActionRequest extends \Eloquent implements ActionRequest
 		return $this->appId;
 	}
 
+	public function getStartTime() {
+		return $this->started_at;
+	}
 }

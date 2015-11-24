@@ -43,6 +43,9 @@ class LoadData extends \Eloquent
         return $data;
     }
 
+    /**
+     * @return \App\Model\LoadData
+     */
     public function copyLD() {
         $data = new LoadData();
         $data->time = $this->time->copy();

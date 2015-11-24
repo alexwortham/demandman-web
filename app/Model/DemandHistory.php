@@ -123,6 +123,9 @@ class DemandHistory extends \Eloquent
         $this->start_time->minute(
             intval($this->start_time->minute / $this->demandDeltaMins)
             * $this->demandDeltaMins );
+		$this->end_time = $this->start_time->copy()
+			->addMinutes($this->demandDeltaMins)
+			->subSecond();
 	}
 
 	/**
@@ -131,9 +134,6 @@ class DemandHistory extends \Eloquent
 	 * @return void
 	 */
 	public function complete() {
-		$this->end_time = $this->start_time->copy()
-			->addMinutes($this->demandDeltaMins)
-			->subSecond();
 		$this->billingCycle()->associate($this->billCycle);
 	}
 
