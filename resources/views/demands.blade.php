@@ -11,6 +11,8 @@
             <li>Usage Charge: {{ $demand->usage_charge }}</li>
         </ul>
     @endforeach
+    <div id="chartdiv" style="width: 100%; height: 400px;"></div>
+    <div id="demandChartdiv" style="width: 100%; height: 400px;"></div>
 @stop
 
 @section('body_post')
@@ -23,13 +25,80 @@
         var demandData = [
                 @foreach($demands as $key => $demand)
                         {
-                "ax": {{ $key }},
-                "ay": {{ $demand->watts }},
+                "ax": "{{ $key }}",
+                "ay": "{{ $demand->watts }}",
             },
             @endforeach
                 ];
 
+        var chartData = [
+		@foreach($curve->load_data as $point)
+                {
+                    "date": new Date("{{ $point->time }}"),
+                    "load": {{ $point->load }},
+                },
+		@endforeach
+            ];
+
         AmCharts.ready(function () {
+            // SERIAL CHART
+                chart = new AmCharts.AmSerialChart();
+
+                chart.dataProvider = chartData;
+                chart.categoryField = "date";
+
+                // data updated event will be fired when chart is first displayed,
+                // also when data will be updated. We'll use it to set some
+                // initial zoom
+                chart.addListener("dataUpdated", function() {
+                    //foo
+                });
+
+                // AXES
+                // Category
+                var categoryAxis = chart.categoryAxis;
+                categoryAxis.parseDates = true; // in order char to understand dates, we should set parseDates to true
+                categoryAxis.minPeriod = "ss"; // as we have data with minute interval, we have to set "mm" here.
+                categoryAxis.gridAlpha = 0.07;
+                categoryAxis.axisColor = "#DADADA";
+
+                // Value
+                var valueAxis = new AmCharts.ValueAxis();
+                valueAxis.gridAlpha = 0.07;
+                valueAxis.title = "Load in Watts";
+                chart.addValueAxis(valueAxis);
+
+                // GRAPH
+                var graph = new AmCharts.AmGraph();
+                graph.type = "line"; // try to change it to "column"
+                graph.title = "red line";
+                graph.valueField = "load";
+                graph.lineAlpha = 1;
+                graph.lineColor = "#d1cf2a";
+                graph.fillAlphas = 0.3; // setting fillAlphas to > 0 value makes it area graph
+                chart.addGraph(graph);
+
+                // CURSOR
+                var chartCursor = new AmCharts.ChartCursor();
+                chartCursor.cursorPosition = "mouse";
+                chartCursor.categoryBalloonDateFormat = "JJ:NN, DD MMMM";
+                chart.addChartCursor(chartCursor);
+
+                // SCROLLBAR
+                var chartScrollbar = new AmCharts.ChartScrollbar();
+
+                chart.addChartScrollbar(chartScrollbar);
+
+                // WRITE
+                chart.write("chartdiv")
+
+
+
+
+
+
+
+
             // SERIAL CHART
             demandChart = new AmCharts.AmSerialChart();
             demandChart.dataProvider = demandData;

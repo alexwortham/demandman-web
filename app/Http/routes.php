@@ -25,6 +25,7 @@ Route::get('appliance/{id}/stop', ['as' => 'appliance_stop', 'uses' => 'Applianc
 Route::get('appliance/{id}/pause', ['as' => 'appliance_pause', 'uses' => 'ApplianceController@pause']);
 Route::get('appliance/{id}/wake', ['as' => 'appliance_wake', 'uses' => 'ApplianceController@wake']);
 Route::get('appliance/{id}/resume', ['as' => 'appliance_resume', 'uses' => 'ApplianceController@resume']);
+Route::get('appliance/{id}/predict', ['as' => 'appliance_predict', 'uses' => 'ApplianceController@predict']);
 Route::get('appliance/control', ['as' => 'appliance_control', 'uses' => 'ApplianceController@control']);
 Route::get('appliance/{id}/circuit/{state}', ['as' => 'appliance_circuit', 'uses' => 'ApplianceController@circuit']);
 Route::get('run/{id}/live', ['as' => 'run.live', 'uses' => 'RunController@live']);

@@ -94,7 +94,7 @@ class SimulatorCommand extends Command
 				call_user_func_array(array(self::$simulator, "app$action"),
 					array($appId));
 			}
-			$response = array("status" => "successful", "appId" => $appId, "action" => $action, "requestId" => $reqId);
+			$response = array("status" => $status, "appId" => $appId, "action" => $action, "requestId" => $reqId);
 			Event::fire(new AppActionResponseEvent($response));
 		} catch (ErrorException $e) {
 			printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());

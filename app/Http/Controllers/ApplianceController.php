@@ -41,12 +41,13 @@ class ApplianceController extends Controller {
 
 	public function predict($id) {
 		$redis = Redis::connection('pubsub');
-		$time = Carbon::parse($redis->get('simulation:time'));
+		//$time = Carbon::parse($redis->get('simulation:time'));
+		$time = Carbon::now();
 		$appliance = Appliance::find($id);
 		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
 			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
 		$curve = $this->predictor->reindexCurve($time, $lastRun->loadCurve);
-		$demands = $this->predictor->calculateDemands($time, $appliance, $curve);
+		$demands = $this->predictor->calculateDemands($time, [], $curve);
 
 		return view('demands', ['demands' => $demands, 'curve' => $curve]);
 	}

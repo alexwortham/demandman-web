@@ -74,13 +74,13 @@ class DemandHistory extends \Eloquent
 		if ($data->time->timestamp - $this->start_time->timestamp > $this->demandDeltaSecs) {
 			return false;
 		}
-		$wattHours = ($data->load / 3600.0);
-		$this->wattHrSum += $wattHours;
+		$wattHours = ($data->load / 60.0);
+		$this->watt_hours += $wattHours;
 		$this->usage_charge += ($wattHours / 1000.0) * $this->costPerKwHr;
 		$this->sum += $data->load;
-		$this->demand_charge = 
-			($this->sum / $this->demandDeltaSecs) * ($this->costPerKw / 1000.0);
-
+		$this->watts = ($this->sum / $this->demandDeltaMins);
+		$this->demand_charge =
+			($this->sum / $this->demandDeltaMins) * ($this->costPerKw / 1000.0);
 		return true;
 	}
 

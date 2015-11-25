@@ -58,7 +58,7 @@ class CapturedDataPredictor implements Predictor
 			$curves[] = $run->loadCurve;
 		}
 
-		$demands = $this->calculateDemands($startTime, $curves, $expectedCurve);
+		$demands = array_values($this->calculateDemands($startTime, $curves, $expectedCurve));
 		$maxDemand = $demands[0];
 		foreach ($demands as $demand) {
 			if ($demand->watts > $maxDemand->watts) {
@@ -97,28 +97,38 @@ class CapturedDataPredictor implements Predictor
 		$demandHistories = array();
 		$demandHistory = new DemandHistory($this->costCalculator);
 		$demandHistory->start($startTime);
-		$demandHistories[] = $demandHistory;
+		/* @var \App\Model\DemandHistory[] $demandHistories */
+		$demandHistories[$demandHistory->start_time->toDateTimeString()] = $demandHistory;
+		foreach ($curves as $curve) {
+			/* @var \App\Model\LoadCurve $curve */
+			$curve->load_data = $curve->loadData->all();
+		}
 		$curves[] = $expectedCurve;
 
 		foreach ($curves as $curve) {
+			$lasto = 0;
 			/* @var \App\Model\LoadCurve $curve */
-			foreach ($curve->loadData as $loadData) {
+			foreach (array_slice($curve->load_data, $lasto, NULL, true)
+					 as $loadData) {
 				/* @var \App\Model\LoadData $loadData */
-				foreach ($demandHistories as $history) {
-					/* @var \App\Model\DemandHistory $history */
-					if ($loadData->time->lt($history->start_time)) {
-						continue;
-					} else if ($loadData->time->lte($history->end_time)) {
-						$history->updateHistory($loadData);
-					} else {
-						continue;
-						printf("Creating new demand history.\n");
-						$newHistory = new DemandHistory($this->costCalculator);
-						$newHistory->start($loadData->time);
+                if ($loadData->time->gte($demandHistory->start_time) &&
+                        $loadData->time->lte($demandHistory->end_time)) {
+                    $demandHistory->updateHistory($loadData);
+                } else if ($loadData->time->gt($demandHistory->end_time)) {
+                    $newHistory = new DemandHistory($this->costCalculator);
+                    $newHistory->start($loadData->time);
+					$newKey = $newHistory->start_time->toDateTimeString();
+					$oldKey = $demandHistory->start_time->toDateTimeString();
+					if (array_key_exists($newKey, $demandHistories)) {
+						$newHistory = $demandHistories[$newKey];
 						$newHistory->updateHistory($loadData);
-						$demandHistories[] = $newHistory;
+					} else {
+						$demandHistories[$oldKey] = $demandHistory;
+						$demandHistories[$newKey] = $newHistory;
+						$demandHistory = $newHistory;
 					}
-				}
+                }
+				$lasto++;
 			}
 		}
 
