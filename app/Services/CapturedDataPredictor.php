@@ -49,6 +49,9 @@ class CapturedDataPredictor implements Predictor
 			->where('is_running', true)->get();
 		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
 			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
+		if ($lastRun === NULL) {
+			return 0;
+		}
 		$expectedCurve = $this->reindexCurve($startTime, $lastRun->loadCurve);
 		$curves = array();
 		foreach ($running as $run) {
@@ -63,7 +66,7 @@ class CapturedDataPredictor implements Predictor
 			}
 		}
 
-		return $maxDemand;
+		return $maxDemand->watts;
 	}
 
 	/**

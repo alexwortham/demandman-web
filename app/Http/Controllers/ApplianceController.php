@@ -5,6 +5,8 @@
  */
 namespace App\Http\Controllers;
 
+use App\Services\CostCalculator;
+use App\Services\Predictor;
 use Illuminate\Http\Request;
 use App\Events\StartAppEvent;
 use App\Events\StopAppEvent;
@@ -14,9 +16,11 @@ use App\Events\WakeAppEvent;
 use App\Events\AppActionEvent;
 use Event;
 use App\Model\Appliance;
+use App\Model\Run;
 use App\Services\ApplianceApi as Api;
 use App\Services\ApiMessenger;
 use Predis\Connection\ConnectionException;
+use \Carbon\Carbon;
 use Redis;
 
 /**
@@ -27,10 +31,24 @@ class ApplianceController extends Controller {
 
 	protected $api;
 	protected $messenger;
+	protected $predictor;
 
-	public function __construct(Api $api, ApiMessenger $messenger) {
+	public function __construct(Api $api, ApiMessenger $messenger, Predictor $predictor) {
 		$this->api = $api;
 		$this->messenger = $messenger;
+		$this->predictor = $predictor;
+	}
+
+	public function predict($id) {
+		$redis = Redis::connection('pubsub');
+		$time = Carbon::parse($redis->get('simulation:time'));
+		$appliance = Appliance::find($id);
+		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
+			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
+		$curve = $this->predictor->reindexCurve($time, $lastRun->loadCurve);
+		$demands = $this->predictor->calculateDemands($time, $appliance, $curve);
+
+		return view('demands', ['demands' => $demands, 'curve' => $curve]);
 	}
 
   /**

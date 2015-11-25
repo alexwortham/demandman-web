@@ -6,6 +6,7 @@
 namespace App\Services;
 
 use App\Model\Appliance;
+use App\Model\LoadCurve;
 use \Carbon\Carbon;
 
 /**
@@ -39,4 +40,18 @@ interface Predictor
 	 * @return \App\Model\DemandHistory The highest predicted DemandHistory.
 	 */
 	public function predictAggregate(Carbon $startTime, Appliance $appliance, $withRunning = true);
+
+	/**
+	 * @param Carbon $startTime
+	 * @param $curves
+	 * @return \App\Model\DemandHistory[]
+	 */
+	public function calculateDemands(Carbon $startTime, $curves, $expectedCurve);
+
+	/**
+	 * @param \Carbon\Carbon $startTime
+	 * @param \App\Model\LoadCurve $curve
+	 * @return \App\Model\LoadCurve
+	 */
+	public function reindexCurve(Carbon $startTime, LoadCurve $curve);
 }

@@ -45,7 +45,7 @@ class DemandManager implements Manager
 		$appliance = $this->applianceStore->get($request->applianceId());
 		$startTime = $request->getStartTime();
 		$predicted_demand = $this->predictor->predictAggregate($startTime, $appliance);
-		if ($predicted_demand->watts > $this->getMaxAllowableDemand()) {
+		if ($predicted_demand > $this->getMaxAllowableDemand()) {
 			return false;
 		} else {
 			return true;
