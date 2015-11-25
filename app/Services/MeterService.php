@@ -264,9 +264,9 @@ class MeterService implements Meter
 			printf("MeterService will call \$this -> app$action(%d)\n", $appId);
 			call_user_func_array(array($this, "app$action"),
 				array($appId));
-			self::$event = NULL;
 		} catch (ErrorException $e) {
 			printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
 		}
+		self::$event = NULL;
 	}
 }

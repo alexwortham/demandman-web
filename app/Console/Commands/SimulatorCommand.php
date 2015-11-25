@@ -85,18 +85,22 @@ class SimulatorCommand extends Command
 		$action = ucfirst($event['data']['actionRequest']['action']);
 		$appId = $event['data']['actionRequest']['appId'];
 		$reqId = $event['data']['actionRequest']['id'];
+		$status = $event['data']['actionRequest']['status'];
 
 		try {
-			printf("Call app$action(%d)\n", $appId);
-			call_user_func_array(array(self::$simulator, "app$action"), 
-				array($appId));
+			printf("Request status: %s\n", $status);
+			if ($status === "approved") {
+				printf("Call app$action(%d)\n", $appId);
+				call_user_func_array(array(self::$simulator, "app$action"),
+					array($appId));
+			}
 			$response = array("status" => "successful", "appId" => $appId, "action" => $action, "requestId" => $reqId);
 			Event::fire(new AppActionResponseEvent($response));
-			self::$event = NULL;
 		} catch (ErrorException $e) {
 			printf("%s\n%s\n", $e->getMessage(), $e->getTraceAsString());
 			$response = array("status" => "failed", "appId" => $appId, "action" => $action, "requestId" => $reqId);
 			Event::fire(new AppActionResponseEvent($response));
 		}
+		self::$event = NULL;
 	}
 }

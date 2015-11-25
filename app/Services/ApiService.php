@@ -50,7 +50,7 @@ class ApiService implements ApplianceApi
 		
 		$actionRequest = $this->messenger->createRequest($appliance, $action);
 
-		call_user_func_array(array($this, "do$action"), array($appliance, $actionRequest));
+		$shallIDoIt = call_user_func_array(array($this, "do$action"), array($appliance, $actionRequest));
 
 		$this->messenger->broadcastRequest($actionRequest);
 	}

@@ -13,6 +13,8 @@ class AppActionRequest extends \Eloquent implements ActionRequest
 	 * @return void
 	 */
 	public function approve() {
+		$this->status = "approved";
+		$this->save();
 	}
 
 	/**
@@ -21,6 +23,8 @@ class AppActionRequest extends \Eloquent implements ActionRequest
 	 * @return void
 	 */
 	public function deny() {
+		$this->status = "denied";
+		$this->save();
 	}
 
 	/**

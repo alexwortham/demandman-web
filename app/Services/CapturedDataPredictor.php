@@ -45,10 +45,10 @@ class CapturedDataPredictor implements Predictor
 	 * @inheritdoc
 	 */
 	public function predictAggregate(Carbon $startTime, Appliance $appliance, $withRunning = true) {
-		$running = Run::where('is_running', true)
-			->with('loadCurve', 'loadCurve.loadData')->get();
-		$lastRun = Run::where('appliance_id', $appliance->id)
-			->with('loadCurve', 'loadCurve.loadData')->latest();
+		$running = Run::with('loadCurve', 'loadCurve.loadData')
+			->where('is_running', true)->get();
+		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
+			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
 		$expectedCurve = $this->reindexCurve($startTime, $lastRun->loadCurve);
 		$curves = array();
 		foreach ($running as $run) {
@@ -108,6 +108,8 @@ class CapturedDataPredictor implements Predictor
 					} else if ($loadData->time->lte($history->end_time)) {
 						$history->updateHistory($loadData);
 					} else {
+						continue;
+						printf("Creating new demand history.\n");
 						$newHistory = new DemandHistory($this->costCalculator);
 						$newHistory->start($loadData->time);
 						$newHistory->updateHistory($loadData);

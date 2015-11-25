@@ -4,7 +4,7 @@
     <div class="page-header">
         <h1>Update User Preference</h1>
     </div>
-    {!! Form::open(array('route' => 'preferences.update', 'id' => $preference->id)) !!}
+    {!! Form::open(array('route' => array('preferences.update', $preference->id), 'method' => 'put')) !!}
     <div class="form-group">
         {!! Form::label('name', 'Name:', array('class' => 'control-label')) !!}
         {!! Form::text('name', $preference->name, array('class' => 'form-control')) !!}
