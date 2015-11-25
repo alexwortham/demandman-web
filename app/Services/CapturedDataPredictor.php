@@ -58,7 +58,7 @@ class CapturedDataPredictor implements Predictor
 			$curves[] = $run->loadCurve;
 		}
 
-		$demands = array_values($this->calculateDemands($startTime, $curves, $expectedCurve));
+		$demands = array_values($this->calculateDemands($startTime, $curves, [$expectedCurve]));
 		$maxDemand = $demands[0];
 		foreach ($demands as $demand) {
 			if ($demand->watts > $maxDemand->watts) {
@@ -93,7 +93,7 @@ class CapturedDataPredictor implements Predictor
 	 * @param $curves
 	 * @return \App\Model\DemandHistory[]
 	 */
-	public function calculateDemands(Carbon $startTime, $curves, $expectedCurve) {
+	public function calculateDemands(Carbon $startTime, $curves, $expectedCurves) {
 		$demandHistories = array();
 		$demandHistory = new DemandHistory($this->costCalculator);
 		$demandHistory->start($startTime);
@@ -101,9 +101,11 @@ class CapturedDataPredictor implements Predictor
 		$demandHistories[$demandHistory->start_time->toDateTimeString()] = $demandHistory;
 		foreach ($curves as $curve) {
 			/* @var \App\Model\LoadCurve $curve */
-			$curve->load_data = $curve->loadData->all();
+			$curve->load_data = $curve->loadData()->get()->all();
 		}
-		$curves[] = $expectedCurve;
+		foreach ($expectedCurves as $expectedCurve) {
+			$curves[] = $expectedCurve;
+		}
 
 		foreach ($curves as $curve) {
 			$lasto = 0;
