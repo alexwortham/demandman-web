@@ -46,8 +46,10 @@ class DemandManager implements Manager
 		$startTime = $request->getStartTime();
 		$predicted_demand = $this->predictor->predictAggregate($startTime, $appliance);
 		if ($predicted_demand > $this->getMaxAllowableDemand()) {
+			$appliance->circuit->open();
 			return false;
 		} else {
+			$appliance->circuit->close();
 			return true;
 		}
 	}
