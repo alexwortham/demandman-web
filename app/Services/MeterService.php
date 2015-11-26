@@ -174,6 +174,7 @@ class MeterService implements Meter
 	 */
 	public function meterLoop() {
 		$this->bufferedAnalog->open();
+		sleep(1); //give the buffer a second to fill
 		$this->measureBiases();
 		if ($this->demandHistory === null) {
 			$this->demandHistory = new DemandHistory($this->calculator);

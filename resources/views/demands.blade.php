@@ -2,16 +2,20 @@
 
 @section('content')
 
+    <h1>{{$startTime}}</h1>
+    <h2>{{$rel}}</h2>
     @foreach($demands as $demand)
     <h3>{{ $demand->start_time }} -&gt; {{ $demand->end_time }}</h3>
         <ul>
-            <li>Watts: {{ $demand->watts }}</li>
+            <li>Average Watts: {{ $demand->watts }}</li>
             <li>Watt Hours: {{ $demand->watt_hours }}</li>
             <li>Demand Charge: {{ $demand->demand_charge }}</li>
             <li>Usage Charge: {{ $demand->usage_charge }}</li>
         </ul>
     @endforeach
-    <div id="chartdiv" style="width: 100%; height: 400px;"></div>
+    @foreach($curves as $key => $curve)
+    <div id="chart{{$key}}div" style="width: 100%; height: 400px;"></div>
+    @endforeach
     <div id="demandChartdiv" style="width: 100%; height: 400px;"></div>
 @stop
 
@@ -30,33 +34,35 @@
             },
             @endforeach
                 ];
-
-        var chartData = [
-		@foreach($curve->load_data as $point)
-                {
-                    "date": new Date("{{ $point->time }}"),
-                    "load": {{ $point->load }},
-                },
-		@endforeach
-            ];
+        @foreach($curves as $key => $curve)
+            var chart{{$key}}Data = [
+            @foreach($curve->load_data as $point)
+                    {
+                        "date": new Date("{{ $point->time }}"),
+                        "load": {{ $point->load }},
+                    },
+            @endforeach
+                ];
+        @endforeach
 
         AmCharts.ready(function () {
+            @foreach($curves as $key => $curve)
             // SERIAL CHART
-                chart = new AmCharts.AmSerialChart();
+                chart{{$key}} = new AmCharts.AmSerialChart();
 
-                chart.dataProvider = chartData;
-                chart.categoryField = "date";
+                chart{{$key}}.dataProvider = chart{{$key}}Data;
+                chart{{$key}}.categoryField = "date";
 
                 // data updated event will be fired when chart is first displayed,
                 // also when data will be updated. We'll use it to set some
                 // initial zoom
-                chart.addListener("dataUpdated", function() {
+                chart{{$key}}.addListener("dataUpdated", function() {
                     //foo
                 });
 
                 // AXES
                 // Category
-                var categoryAxis = chart.categoryAxis;
+                var categoryAxis = chart{{$key}}.categoryAxis;
                 categoryAxis.parseDates = true; // in order char to understand dates, we should set parseDates to true
                 categoryAxis.minPeriod = "ss"; // as we have data with minute interval, we have to set "mm" here.
                 categoryAxis.gridAlpha = 0.07;
@@ -66,7 +72,7 @@
                 var valueAxis = new AmCharts.ValueAxis();
                 valueAxis.gridAlpha = 0.07;
                 valueAxis.title = "Load in Watts";
-                chart.addValueAxis(valueAxis);
+                chart{{$key}}.addValueAxis(valueAxis);
 
                 // GRAPH
                 var graph = new AmCharts.AmGraph();
@@ -76,22 +82,23 @@
                 graph.lineAlpha = 1;
                 graph.lineColor = "#d1cf2a";
                 graph.fillAlphas = 0.3; // setting fillAlphas to > 0 value makes it area graph
-                chart.addGraph(graph);
+                chart{{$key}}.addGraph(graph);
 
                 // CURSOR
                 var chartCursor = new AmCharts.ChartCursor();
                 chartCursor.cursorPosition = "mouse";
                 chartCursor.categoryBalloonDateFormat = "JJ:NN, DD MMMM";
-                chart.addChartCursor(chartCursor);
+                chart{{$key}}.addChartCursor(chartCursor);
 
                 // SCROLLBAR
                 var chartScrollbar = new AmCharts.ChartScrollbar();
 
-                chart.addChartScrollbar(chartScrollbar);
+                chart{{$key}}.addChartScrollbar(chartScrollbar);
 
                 // WRITE
-                chart.write("chartdiv")
+                chart{{$key}}.write("chart{{$key}}div");
 
+            @endforeach
 
 
 

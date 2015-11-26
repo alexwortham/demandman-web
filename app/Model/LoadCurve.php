@@ -42,6 +42,9 @@ class LoadCurve extends \Eloquent
 	/** @var int $prev_load The load of the most recently added point. */
 	private $prev_load = 0;
 
+	/** @var int $load_data_idx The next index offset for added LoadDatas */
+	private $load_data_idx = 0;
+
 	/**
 	 * Parse the curve data stored in this object.
 	 *
@@ -92,6 +95,7 @@ class LoadCurve extends \Eloquent
 		if ($noSmoothing !== true && $this->smoothing === self::SMOOTHING_ENABLED) {
 			$this->expAverage($data);
 		}
+		$data->idx = $this->load_data_idx++;
 		$this->load_data[$time->timestamp] = $data;
 	}
 

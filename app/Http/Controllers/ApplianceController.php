@@ -41,13 +41,57 @@ class ApplianceController extends Controller {
 
 	public function predict($id) {
 		$redis = Redis::connection('pubsub');
+		$startTime = Carbon::parse($redis->get('simulation:time'));
+		$appliance = Appliance::find($id);
+		$running = Run::with(['loadCurve.loadData' => function($query) {
+				$query->orderBy('idx', 'desc')->take(1);
+			}])->where('is_running', true)->get();
+		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
+			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
+		if ($lastRun === NULL) {
+			//return 0;
+		}
+		$expectedCurve = $this->predictor->reindexCurve($startTime, $lastRun->loadCurve);
+		$curves = array();
+		$newTime = $startTime->copy();
+		foreach ($running as $run) {
+			$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
+				->where('appliance_id', $run->appliance_id)
+				->where('is_running', false)
+				->orderBy('created_at', 'desc')->first();
+			$lastData = $run->loadCurve->loadData->first();
+			$elapsed = 0;
+			if ($lastData !== NULL) {
+				$elapsed = $lastData->idx;
+			}
+			$newTime->modify((int ) $elapsed.' minutes ago');
+			$reindexed = $this->predictor->reindexCurve($startTime, $lastRun->loadCurve, $elapsed);
+			$curves[] = $reindexed;
+		}
+		$curves[] = $expectedCurve;
+
+		$demands = $this->predictor->calculateDemands($startTime, [], $curves);
+
+
+		return view('demands', ['demands' => $demands,
+			'curves' => $curves, 'startTime' => $startTime, 'rel' => $newTime]);
+	}
+
+	public function predictOld($id) {
+		$redis = Redis::connection('pubsub');
 		//$time = Carbon::parse($redis->get('simulation:time'));
 		$time = Carbon::now();
 		$appliance = Appliance::find($id);
 		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
 			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
-		$curve = $this->predictor->reindexCurve($time, $lastRun->loadCurve);
-		$demands = $this->predictor->calculateDemands($time, [], $curve);
+		$lastRun2 = Run::with('loadCurve', 'loadCurve.loadData')
+			->where('appliance_id', 2)->orderBy('created_at', 'desc')->first();
+		//$curve = $this->predictor->reindexCurve($time, $lastRun->loadCurve);
+		//$curve2 = $this->predictor->reindexCurve($time, $lastRun2->loadCurve);
+		$curve = $lastRun->loadCurve;
+		$curve2 = $lastRun2->loadCurve;
+		//$demands = $this->predictor->calculateDemands($time, [$curve, $curve2], []);
+		$demands = $this->predictor->calculateDemands($time, [], [$curve]);
 
 		return view('demands', ['demands' => $demands, 'curve' => $curve]);
 	}

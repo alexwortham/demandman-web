@@ -13,9 +13,10 @@ use \Carbon\Carbon;
  * @property \Carbon\Carbon $time The timestamp for this datum.
  * @property double $load The load measured at this point in time.
  * @property \App\Model\AnalogCurrentMonitor $analogCurrentMonitor The
+ * AnalogCurrentMonitor which made the measurement contained in this datum.
  * @property \App\Model\LoadCurve $loadCurve The LoadCurve associated
  * with this model.
- * AnalogCurrentMonitor which made the measurement contained in this datum.
+ * @property int $idx The index of this LoadData in its LoadCurve.
  */
 class LoadData extends \Eloquent
 {
