@@ -53,6 +53,11 @@ class MeterService implements Meter
 	 */
 	private $activeMonitors;
 
+	/**
+	 * @var \App\Model\DemandHistory[] $activeDemands.
+	 */
+	private $activeDemands;
+
 	/** @var \App\Model\LoadCurve $aggregate The current aggregate curve */
 	private $aggregate;
 
@@ -95,6 +100,7 @@ class MeterService implements Meter
 		$this->prev_time = $this->time->copy()->subMinute();
 		$this->aggregate = new LoadCurve();
 		$this->redis = Redis::connection('pubsub');
+		$this->activeDemands = array();
 	}
 
 	/**
@@ -112,6 +118,9 @@ class MeterService implements Meter
 		$run->started_at = $this->time->copy();
 		$run->loadCurve()->associate($curve);
 		$run->save();
+		$demand = DemandHistory::construct($this->calculator, $appId);
+		$demand->start($this->time);
+		$this->activeDemands[$currentMonitor->ain_number] = $demand;
 	}
 
 	/**
@@ -130,6 +139,11 @@ class MeterService implements Meter
 		$run->completed_at = $this->time->copy();
 		$run->save();
 		$this->curves[$currentMonitor->ain_number] = new LoadCurve();
+		$demand = $this->activeDemands[$currentMonitor->ain_number];
+		if ($demand !== NULL) {
+			$demand->complete();
+			$demand->save();
+		}
 		//set stuff on curve?
 	}
 
@@ -156,9 +170,18 @@ class MeterService implements Meter
 				if ($monitor->is_active === true) {
 					//printf("AIN%d: raw = %.4f; calc = %.4f\n", $ain_number, $raw_value, $watts);
 					$curve = $this->curves[$ain_number];
+					$demand = $this->activeDemands[$ain_number];
 					$loadData = LoadData::createLD($monitor, $curve, $this->prev_time, $watts);
 					$curve->setDataAt($this->prev_time,	$loadData);
 					$this->aggregate->addToData($this->prev_time, $loadData);
+					if ( ! $demand->updateHistory($loadData) ) {
+                        $demand->complete();
+                        $demand->save();
+                        $demand = DemandHistory::construct($this->calculator, $demand->appliance_id);
+                        $demand->start($this->time);
+                        $demand->updateHistory($loadData);
+						$this->activeDemands[$ain_number] = $demand;
+                    }
 					if ($curve->id !== NULL && is_array($curve->load_data) && count($curve->load_data) > 0) {
 						$curve->loadData()->saveMany($curve->load_data);
 						$curve->load_data = array();

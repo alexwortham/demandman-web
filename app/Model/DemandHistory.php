@@ -48,8 +48,8 @@ class DemandHistory extends \Eloquent
 	 *
 	 * @param \App\Services\CostCalculator $calculator The calculator object.
 	 */
-	public static function construct(CostCalculator $calculator) {
-		$demand = new DemandHistory($calculator);
+	public static function construct(CostCalculator $calculator, $appId = NULL) {
+		$demand = new DemandHistory();
 		$demand->calculator = $calculator;
 		$demand->costPerKwHr = $calculator->costPerKiloWattHour();
 		$demand->costPerKw = $calculator->costPerKiloWatt();
@@ -58,6 +58,7 @@ class DemandHistory extends \Eloquent
 		$demand->billCycle = $calculator->getCurrentBillingCycle();
 		$demand->sum = 0;
 		$demand->wattHrSum = 0;
+		$demand->appliance_id = $appId;
 
 		return $demand;
 	}
@@ -146,5 +147,14 @@ class DemandHistory extends \Eloquent
 	 */
 	public function billingCycle() {
 		return $this->belongsTo('App\Model\BillingCycle');
+	}
+
+	/**
+	 * Get the Appliance relation.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function appliance() {
+		return $this->belongsTo('App\Model\Appliance');
 	}
 }

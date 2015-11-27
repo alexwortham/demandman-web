@@ -9,6 +9,27 @@
 	</div>
     <div class="col-md-4"></div>
 </div>
+<div class="row">
+    <div class="col-md-12">
+        <h1>Energy Consumption</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4" style="font-size: 20px;">
+        <ul id="appliance-usage-list" class="list-unstyled">
+            @foreach($appliances as $appliance)
+            <li>
+                <span class="glyphicon glyphicon-stop"></span>
+                <span id="appliance{{$appliance->id}}-legend">{{$appliance->name}}: {{$usages[$appliance->id]}} kWh</span>
+            </li>
+            @endforeach
+        </ul>
+    </div>
+    <div class="col-md-8">
+        <div id="piediv" style="width: 100%; height: 400px;"></div>
+    </div>
+
+</div>
 
 <h2>Control Panel</h2>
 <div class="row">
@@ -26,7 +47,15 @@
 	{!! Html::script('js/amcharts/xy.js') !!}
 	{!! Html::script('js/amcharts/gauge.js') !!}
 	{!! Html::script('js/amcharts/pie.js') !!}
+    {!! Html::script('js/amcharts/themes/light.js') !!}
 	<script>
+
+
+
+		(function($){
+			$(function() {
+				        var pieChart;
+
         AmCharts.ready(function () {
             var gaugeChart = AmCharts.makeChart("gaugediv", {
                 "type": "gauge",
@@ -102,17 +131,90 @@
                     }
                 }
             }
+
+
+
+
+
+            pieChart = AmCharts.makeChart("piediv", {
+                "type": "pie",
+                "startDuration": 0,
+                "theme": "light",
+                "addClassNames": true,
+//                "legend":{
+//                    "position":"right",
+//                    "marginRight":100,
+//                    "fontSize": 20,
+//                    "autoMargins":false
+//                },
+                "innerRadius": "30%",
+                "defs": {
+                    "filter": [{
+                        "id": "shadow",
+                        "width": "200%",
+                        "height": "200%",
+                        "feOffset": {
+                            "result": "offOut",
+                            "in": "SourceAlpha",
+                            "dx": 0,
+                            "dy": 0
+                        },
+                        "feGaussianBlur": {
+                            "result": "blurOut",
+                            "in": "offOut",
+                            "stdDeviation": 5
+                        },
+                        "feBlend": {
+                            "in": "SourceGraphic",
+                            "in2": "blurOut",
+                            "mode": "normal"
+                        }
+                    }]
+                },
+                "dataProvider": [
+                    @foreach($appliances as $appliance)
+                    {
+                        "appliance": "{{$appliance->name}}",
+                        "kWh": (Math.round("{{$usages[$appliance->id]}}" * 100) / 100)
+                    },
+                    @endforeach
+                ],
+                "valueField": "kWh",
+                "titleField": "appliance",
+                "export": {
+                    "enabled": true
+                },
+            });
+
+            //pieChart.addTitle("Energy Consumption", 28, "#000000", 1, true);
+            pieChart.addListener("init", handleInit);
+
+            pieChart.addListener("rollOverSlice", function(e) {
+                handleRollOver(e);
+            });
+
+            function handleInit(){
+                pieChart.legend.addListener("rollOverItem", handleRollOver);
+            }
+
+            function handleRollOver(e){
+                var wedge = e.dataItem.wedge.node;
+                wedge.parentNode.appendChild(wedge);
+            }
+
+            $('ul#appliance-usage-list li span.glyphicon').each(function(i, el){
+                    $(this).css('color', pieChart.colors[i]);
+                });
         });
 
-
-		(function($){
-			$(function() {
 				$('a.btn-success').each(function(i,el){
 					$(this).click(function(event) {
 						event.preventDefault();
 						$.get($(this).attr('href'));
 					});
 				});
+
+
 			});
 		})(jQuery);
 

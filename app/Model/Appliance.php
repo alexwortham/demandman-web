@@ -56,7 +56,21 @@ class Appliance extends \Eloquent {
 		return $this->hasOne('App\Model\AnalogCurrentMonitor');
 	}
 
+	/**
+	 * Get the Circuit relation.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
 	public function circuit() {
 		return $this->hasOne('App\Model\Circuit');
+	}
+
+	/**
+	 * Get the DemandHistory relation.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function demandHistories() {
+		return $this->hasMany('App\Model\DemandHistory');
 	}
 }

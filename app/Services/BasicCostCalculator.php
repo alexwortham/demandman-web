@@ -14,11 +14,6 @@ use App\Model\ElectricityRate;
  */
 class BasicCostCalculator implements CostCalculator
 {
-	/** @var \App\Model\ElectricityRate $rate */
-	public static $rate;
-	/** @var \App\Model\BillingCycle */
-	public static $billingCycle;
-
 	public function __construct() {
 		self::$rate = ElectricityRate::where('is_current', true)->first();
 		self::$billingCycle = BillingCycle::where('is_current', true)->first();
