@@ -15,18 +15,28 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-4" style="font-size: 20px;">
-        <ul id="appliance-usage-list" class="list-unstyled">
+    <div class="col-md-4" style="font-size: 20px; padding-bottom: 50px;">
+        <table id="appliance-usage-list" class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Appliance</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
             @foreach($appliances as $appliance)
-            <li>
-                <span class="glyphicon glyphicon-stop"></span>
-                <span id="appliance{{$appliance->id}}-legend">{{$appliance->name}}: {{$usages[$appliance->id]}} kWh</span>
-            </li>
+                <tr>
+                    <td><span class="glyphicon glyphicon-stop"></span></td>
+                    <td><span id="appliance{{$appliance->id}}-legend">{{$appliance->name}}</span></td>
+                    <td>{{$usages[$appliance->id]}} kWh</td>
+                </tr>
             @endforeach
-        </ul>
+            </tbody>
+        </table>
     </div>
     <div class="col-md-8">
-        <div id="piediv" style="width: 100%; height: 400px;"></div>
+        <div id="piediv" style="width: 100%; height: 400px; margin-top: -100px"></div>
     </div>
 
 </div>
@@ -184,6 +194,7 @@
                 "export": {
                     "enabled": true
                 },
+                "fontSize": "18pt",
             });
 
             //pieChart.addTitle("Energy Consumption", 28, "#000000", 1, true);
@@ -202,7 +213,7 @@
                 wedge.parentNode.appendChild(wedge);
             }
 
-            $('ul#appliance-usage-list li span.glyphicon').each(function(i, el){
+            $('td span.glyphicon').each(function(i, el){
                     $(this).css('color', pieChart.colors[i]);
                 });
         });
