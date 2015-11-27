@@ -23,7 +23,7 @@ namespace App\Model;
 class BillingCycle extends \Eloquent
 {
     //
-	public function histories() {
+	public function demandHistories() {
 		return $this->hasMany('App\Model\DemandHistory');
 	}
 

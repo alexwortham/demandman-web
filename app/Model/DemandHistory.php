@@ -48,16 +48,18 @@ class DemandHistory extends \Eloquent
 	 *
 	 * @param \App\Services\CostCalculator $calculator The calculator object.
 	 */
-	public function __construct(CostCalculator $calculator) {
-		parent::__construct();
-		$this->calculator = $calculator;
-		$this->costPerKwHr = $calculator->costPerKiloWattHour();
-		$this->costPerKw = $calculator->costPerKiloWatt();
-		$this->demandDeltaSecs = $calculator->demandDeltaSeconds();
-		$this->demandDeltaMins = $calculator->demandDeltaMinutes();
-		$this->billCycle = $calculator->getCurrentBillingCycle();
-		$this->sum = 0;
-		$this->wattHrSum = 0;
+	public static function construct(CostCalculator $calculator) {
+		$demand = new DemandHistory($calculator);
+		$demand->calculator = $calculator;
+		$demand->costPerKwHr = $calculator->costPerKiloWattHour();
+		$demand->costPerKw = $calculator->costPerKiloWatt();
+		$demand->demandDeltaSecs = $calculator->demandDeltaSeconds();
+		$demand->demandDeltaMins = $calculator->demandDeltaMinutes();
+		$demand->billCycle = $calculator->getCurrentBillingCycle();
+		$demand->sum = 0;
+		$demand->wattHrSum = 0;
+
+		return $demand;
 	}
 
 	/**

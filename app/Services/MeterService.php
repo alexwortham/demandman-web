@@ -109,6 +109,7 @@ class MeterService implements Meter
 		$run = new Run();
 		$run->is_running = true;
 		$run->appliance_id = $appId;
+		$run->started_at = $this->time->copy();
 		$run->loadCurve()->associate($curve);
 		$run->save();
 	}
@@ -126,6 +127,7 @@ class MeterService implements Meter
 			->where('is_running', true)->first();
 		//$run->loadCurve()->associate($curve);
 		$run->is_running = false;
+		$run->completed_at = $this->time->copy();
 		$run->save();
 		$this->curves[$currentMonitor->ain_number] = new LoadCurve();
 		//set stuff on curve?
@@ -176,7 +178,7 @@ class MeterService implements Meter
 		sleep(1); //give the buffer a second to fill
 		$this->measureBiases();
 		if ($this->demandHistory === null) {
-			$this->demandHistory = new DemandHistory($this->calculator);
+			$this->demandHistory = DemandHistory::construct($this->calculator);
 			$this->demandHistory->start($this->time);
 		}
 		while ($this->meterWait()) {
@@ -190,7 +192,7 @@ class MeterService implements Meter
 			if ( ! $this->demandHistory->updateHistory($agg_data) ) {
 				$this->demandHistory->complete();
 				$this->demandHistory->save();
-				$this->demandHistory = new DemandHistory($this->calculator);
+				$this->demandHistory = DemandHistory::construct($this->calculator);
 				$this->demandHistory->start($this->time);
 				$this->demandHistory->updateHistory($agg_data);
 			}

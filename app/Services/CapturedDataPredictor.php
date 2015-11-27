@@ -108,7 +108,7 @@ class CapturedDataPredictor implements Predictor
 	 */
 	public function calculateDemands(Carbon $startTime, $curves, $expectedCurves) {
 		$demandHistories = array();
-		$demandHistory = new DemandHistory($this->costCalculator);
+		$demandHistory = DemandHistory::construct($this->costCalculator);
 		$demandHistory->start($startTime);
 		/* @var \App\Model\DemandHistory[] $demandHistories */
 		$demandHistories[$demandHistory->start_time->toDateTimeString()] = $demandHistory;
@@ -133,7 +133,7 @@ class CapturedDataPredictor implements Predictor
                     $demandHistory->updateHistory($loadData);
                 //} else if ($loadData->time->gt($demandHistory->end_time)) {
 				} else {
-                    $newHistory = new DemandHistory($this->costCalculator);
+                    $newHistory = DemandHistory::construct($this->costCalculator);
                     $newHistory->start($loadData->time);
 					$newKey = $newHistory->start_time->toDateTimeString();
 					$oldKey = $demandHistory->start_time->toDateTimeString();
