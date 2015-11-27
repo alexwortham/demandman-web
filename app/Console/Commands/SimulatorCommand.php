@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\LcdClock;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Redis;
 use App\Simulator;
@@ -24,6 +26,8 @@ class SimulatorCommand extends Command
 	public static $eventkey = NULL;
 	const SIM_PID_KEY = 'simpid';
 	private static $simulator = NULL;
+	private $connection;
+	private $clock;
 
     /**
      * The name and signature of the console command.
@@ -60,10 +64,12 @@ class SimulatorCommand extends Command
 			$this->error('pcntl_signal function is not defined! Cannot run simulator.');
 			return false;
 		}
+		$this->connection = Redis::connection('pubsub');
         self::$pid = posix_getpid();
         self::$eventkey = 'process:'.self::$pid.':queue';
-        $connection = Redis::connection('pubsub');
-        $connection->set(self::SIM_PID_KEY, self::$pid);
+        $this->connection->set(self::SIM_PID_KEY, self::$pid);
+	//	i2c_open(1);
+		$this->clock = new LcdClock(0x3e);
 
 		try {
             while (true) {
@@ -71,6 +77,9 @@ class SimulatorCommand extends Command
 				if (self::$event !== NULL) {
 					$this->handle_signal();
 				}
+
+				$time = Carbon::parse($this->connection->get('simulation:time'));
+				$this->clock->setTime($time);
 				self::$simulator->step();
 			}
 		} catch (ErrorException $e) {
