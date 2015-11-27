@@ -148,14 +148,13 @@ class MeterService implements Meter
 		foreach ($this->activeMonitors as $ain_number => $monitor) {
 			/* @var $monitor \App\Model\AnalogCurrentMonitor */
 			//printf("aggregate->setDataAt(%d)\n", $this->time->timestamp);
-			$this->prev_time = $this->time->copy()->subMinute();
-			$this->aggregate->setDataAt($this->prev_time, LoadData::createLD(NULL, NULL, $this->time, 0));
+			$this->aggregate->setDataAt($this->prev_time, LoadData::createLD(NULL, NULL, $this->prev_time, 0));
 			foreach ($buffer[$monitor->ain_number] as $raw_value) {
 				$watts = $monitor->getWatts($raw_value);
 				if ($monitor->is_active === true) {
 					//printf("AIN%d: raw = %.4f; calc = %.4f\n", $ain_number, $raw_value, $watts);
 					$curve = $this->curves[$ain_number];
-					$loadData = LoadData::createLD($monitor, $curve, $this->time, $watts);
+					$loadData = LoadData::createLD($monitor, $curve, $this->prev_time, $watts);
 					$curve->setDataAt($this->prev_time,	$loadData);
 					$this->aggregate->addToData($this->prev_time, $loadData);
 					if ($curve->id !== NULL && is_array($curve->load_data) && count($curve->load_data) > 0) {
@@ -193,6 +192,7 @@ class MeterService implements Meter
 				$this->demandHistory->save();
 				$this->demandHistory = new DemandHistory($this->calculator);
 				$this->demandHistory->start($this->time);
+				$this->demandHistory->updateHistory($agg_data);
 			}
 		}
 		$this->bufferedAnalog->close();
