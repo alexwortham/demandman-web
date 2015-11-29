@@ -22,6 +22,16 @@ class PreferencesController extends Controller {
         return view('preferences/index', ['preferences' => UserPreference::all()]);
     }
 
+    public function threshold($watts) {
+        $threshold = UserPreference::where('name', 'demand.threshold')->first();
+        $threshold->value = $watts;
+
+        if ($threshold->save()) {
+            return '{"status":"success"}';
+        } else {
+            return '{"status":"failed"}';
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *

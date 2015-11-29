@@ -539,7 +539,7 @@
                         threshChart.validateData();
                     },
                     stop: function( event, ui ) {
-                        //ajax set threshold.
+                        $.get('/preferences/threshold/' + ui.value);
                     }
                 });
 
