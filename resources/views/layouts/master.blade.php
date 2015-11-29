@@ -7,6 +7,8 @@
 		<title>@yield('title')</title>
 		{!! Html::style('css/bootstrap.min.css') !!}
 		{!! Html::style('css/starter-template.css') !!}
+		{!! Html::style('css/jquery-ui.min.css') !!}
+		{!! Html::style('css/jquery-ui.smoothness.min.css') !!}
 		@yield('styles')
 	</head>
 	<body>
@@ -44,6 +46,7 @@
 		</div>
 		{!! Html::script('js/jquery-2.1.4.min.js') !!}
 		{!! Html::script('js/bootstrap.min.js') !!}
+		{!! Html::script('js/jquery-ui.min.js') !!}
 		@yield('body_post')
 	</body>
 </html>
