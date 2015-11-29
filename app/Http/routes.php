@@ -32,6 +32,7 @@ Route::get('run/{id}/live', ['as' => 'run.live', 'uses' => 'RunController@live']
 Route::get('run/{id}/data', ['as' => 'run.data', 'uses' => 'RunController@data']);
 Route::get('run/{id}/live/{since}', ['as' => 'run.live', 'uses' => 'RunController@liveUpdate']);
 Route::get('preferences/threshold/{watts}', ['as' => 'preferences.set_threshold', 'uses' => 'PreferencesController@threshold']);
+Route::get('live/demand', ['as' => 'live.demand', 'uses' => 'LiveController@demand']);
 
 Route::resource('appliance', 'ApplianceController');
 Route::resource('sensor', 'SensorController');

@@ -225,13 +225,6 @@
                     "nailAlpha": 1,
                     "innerRadius": 0,
                     "startWidth": 22,
-                    "color": "#cc4748"
-                }, {
-                    "radius": "70%",
-                    "nailRadius": "25",
-                    "nailAlpha": 1,
-                    "innerRadius": 0,
-                    "startWidth": 22,
                     "color": "#000000"
                 }],
                 "export": {
@@ -241,21 +234,21 @@
 
             setInterval(randomValue, 2000);
 
+            var gaugeValue;
             // set random value
             function randomValue() {
-                var value = Math.round({{$demand->watts / 1000}} * 100) / 100;
-                var randvalue = Math.round( Math.random() * 12 );
+                $.get('/live/demand', function (data) {
+                    gaugeValue = data.demand;
+                });
+                console.log(gaugeValue);
                 if (gaugeChart) {
                     if (gaugeChart.arrows) {
                         if (gaugeChart.arrows[0]) {
                             if (gaugeChart.arrows[0].setValue) {
-                                gaugeChart.arrows[0].setValue(value);
-                                gaugeChart.axes[0].setBottomText(randvalue + " kW");
-                            }
-                        }
-                        if (gaugeChart.arrows[1]) {
-                            if (gaugeChart.arrows[1].setValue) {
-                                gaugeChart.arrows[1].setValue(randvalue);
+                                if (gaugeValue != undefined) {
+                                    gaugeChart.arrows[0].setValue(gaugeValue);
+                                    gaugeChart.axes[0].setBottomText(gaugeValue + " kW");
+                                }
                             }
                         }
                     }
