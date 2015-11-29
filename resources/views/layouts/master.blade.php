@@ -25,10 +25,11 @@
 				</div>
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-						<li><a href="/curve/calculate/2/1/0/120/1/30">Demo 1</a></li>
+					<!--	<li><a href="/curve/calculate/2/1/0/120/1/30">Demo 1</a></li>
 						<li><a href="/curve/create">Add Curve</a></li>
 						<li><a href="/curve">List Curves</a></li>
 						<li><a href="{!! URL::route('run.index') !!}">Run History</a></li>
+						-->
 					</ul>
 				</div>
 			</div>
