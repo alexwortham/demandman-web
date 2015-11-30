@@ -40,7 +40,7 @@ class Simulation extends \Eloquent
 			$this->loadMeter->set_load($this->simCurve[$this->currentStep]);
 			$this->currentStep++;
 			return true;
-		} else if ($this->currentStep === $this->count) {
+		} else if ($this->currentStep >= $this->count) {
 			$this->loadMeter->set_load(0);
 			$this->currentStep++;
 			return false;

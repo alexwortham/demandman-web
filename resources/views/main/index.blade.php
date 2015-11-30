@@ -11,9 +11,12 @@
         .stat-panel h4 {
             margin: 0;
         }
-        .stat-panel h6 {
+        .stat-panel h6, .last-refreshed h6 {
             margin: 0;
             color: #ababab;
+        }
+        .last-refreshed {
+            text-align: right;
         }
         .stat-panel p {
             font-size: 46pt;
@@ -49,23 +52,12 @@
     </div>
     <div class="panel panel-default">
             <div class="panel-body stats">
-                <div class="row">
-                    <div class="stat-panel">
-                        <h4>Amount Due</h4>
-                        <h1 class="bill">${{$totalBill}}</h1>
-                    </div>
-                @foreach($stats as $stat)
-                <div class="stat-panel">
-                    <h4>{{$stat['title']}}</h4>
-                    <h6>{{$stat['subtitle']}}&nbsp;</h6>
-                    <p>{{$stat['value']}}</p>
-                </div>
-                @endforeach
+               @include('main/stats')
             </div>
         </div>
     </div>
     <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-12 last-refreshed">
                 </div>
     </div>
 <div class="row">
@@ -564,6 +556,14 @@
 					});
 				});
 
+                setInterval(refreshStats, 30000);
+
+                function refreshStats() {
+                    $.get('/live/stats', [], function(data, textStatus, jqXHR) {
+                        $('.stats').html(data);
+                        $('.last-refreshed').html('<h6>Last Refreshed: ' + (new Date()).toLocaleTimeString() + '</h6>');
+                    });
+                }
 
 
 			});
