@@ -107,15 +107,29 @@ class ApplianceController extends Controller {
   }
 
 	public function start($id) {
-		$appliance = Appliance::find($id);
-		$running = $appliance->runs()->where('is_running', true)->count();
-		if ($running !== 0) {
-			return response()->json(['error' => ['type' => 'application', 'message' => 'Appliance is already running']]);
+		$redis = Redis::connection('pubsub');
+		$calculationLock = $redis->get('calculation:lock');
+		$redis->set('calculation:lock', 'locked');
+		if ($calculationLock === "locked") {
+			return response()->json(['error' => ['type' => 'application', 'message' => 'Another calculation is in progress.']]);
 		}
-		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Start",
-			function () use ($id) {
-				$this->api->startAppliance($id);
-			});
+		$message = "";
+		try {
+			$appliance = Appliance::find($id);
+			$running = $appliance->runs()->where('is_running', true)->count();
+			if ($running !== 0) {
+				return response()->json(['error' => ['type' => 'application', 'message' => 'Appliance is already running']]);
+			}
+			$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Start",
+				function () use ($id) {
+					$this->api->startAppliance($id);
+				});
+		} catch (\Exception $e) {
+
+		} finally {
+			$redis->set('calculation:lock', 'unlocked');
+		}
+
 		return $this->respondJsonOrTimeout($message);
 	}
 
