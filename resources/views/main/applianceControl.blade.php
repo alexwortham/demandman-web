@@ -19,10 +19,6 @@
 			<span class="glyphicon glyphicon-play"></span>&nbsp;
 			Start
 		</a>
-    		<a class="btn btn-danger" href="{!! URL::route('appliance_stop', ['id' => $appliance->id], false) !!}">
-			<span class="glyphicon glyphicon-stop"></span>&nbsp;
-			Stop
-		</a>
 	</div>
   </div>
 </div>

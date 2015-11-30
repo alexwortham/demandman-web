@@ -51,7 +51,7 @@ class CapturedDataPredictor implements Predictor
 		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
 			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
 		if ($lastRun === NULL) {
-			//return 0;
+			return 0;
 		}
 		$expectedCurve = $this->reindexCurve($startTime, $lastRun->loadCurve);
 		$curves = array();

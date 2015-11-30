@@ -107,6 +107,11 @@ class ApplianceController extends Controller {
   }
 
 	public function start($id) {
+		$appliance = Appliance::find($id);
+		$running = $appliance->runs()->where('is_running', true)->count();
+		if ($running !== 0) {
+			return response()->json(['error' => ['type' => 'application', 'message' => 'Appliance is already running']]);
+		}
 		$message = $this->subscribeAndWait("dm.complete.appliance.$id.action.Start",
 			function () use ($id) {
 				$this->api->startAppliance($id);
