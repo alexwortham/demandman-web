@@ -544,6 +544,11 @@
                         var a = $(this);
 						$.get($(this).attr('href'), [], function(data, textStatus, jqXHR) {
                             console.log(data);
+                            if (data.error != null) {
+                                a.parent().append('<div class="alert alert-warning alert-dismissible" role="alert" style="display: inline-block; margin-left: 20px;">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        '<span class="glyphicon glyphicon-thumbs-down"></span></div>');
+                            } else
                             if (data.data.actionComplete != null) {
                                 if (data.data.actionComplete.status == "approved") {
                                     a.parent().append('<div class="alert alert-success alert-dismissible" role="alert" style="display: inline-block; margin-left: 20px;">' +
