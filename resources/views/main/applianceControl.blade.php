@@ -15,10 +15,12 @@
     @endif
 	</div>
 	<div style="width: 70%; display: inline-block; padding-left: 1em;">
-    		<a class="btn btn-success" href="{!! URL::route('appliance_start', ['id' => $appliance->id], false) !!}">
+		<div style="display: inline-block;">
+    	<a class="btn btn-success" href="{!! URL::route('appliance_start', ['id' => $appliance->id], false) !!}">
 			<span class="glyphicon glyphicon-play"></span>&nbsp;
 			Start
 		</a>
+		</div>
 	</div>
   </div>
 </div>

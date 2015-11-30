@@ -541,7 +541,21 @@
 				$('a.btn-success').each(function(i,el){
 					$(this).click(function(event) {
 						event.preventDefault();
-						$.get($(this).attr('href'));
+                        var a = $(this);
+						$.get($(this).attr('href'), [], function(data, textStatus, jqXHR) {
+                            console.log(data);
+                            if (data.data.actionComplete != null) {
+                                if (data.data.actionComplete.status == "approved") {
+                                    a.parent().append('<div class="alert alert-success alert-dismissible" role="alert" style="display: inline-block; margin-left: 20px;">' +
+			'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+			 '<span class="glyphicon glyphicon-thumbs-up"></span></div>');
+                                } else {
+                                    a.parent().append('<div class="alert alert-danger alert-dismissible" role="alert" style="display: inline-block; margin-left: 20px;">' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                            '<span class="glyphicon glyphicon-thumbs-down"></span></div>');
+                                }
+                            }
+                        });
 					});
 				});
 
