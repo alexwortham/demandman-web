@@ -45,9 +45,7 @@ class CapturedDataPredictor implements Predictor
 	 * @inheritdoc
 	 */
 	public function predictAggregate(Carbon $startTime, Appliance $appliance, $withRunning = true) {
-		$running = Run::with(['loadCurve.loadData' => function($query) {
-				$query->orderBy('idx', 'desc')->take(1);
-			}])->where('is_running', true)->get();
+		$running = Run::with(['loadCurve'])->where('is_running', true)->get();
 		$lastRun = Run::with('loadCurve', 'loadCurve.loadData')
 			->where('appliance_id', $appliance->id)->orderBy('created_at', 'desc')->first();
 		if ($lastRun === NULL) {
@@ -60,7 +58,7 @@ class CapturedDataPredictor implements Predictor
 				->where('appliance_id', $appliance->id)
 				->where('is_running', false)
 				->orderBy('created_at', 'desc')->first();
-			$lastData = $run->loadCurve->loadData->first();
+			$lastData = $run->loadCurve->loadData()->orderBy('idx', 'desc')->first();
 			$elapsed = 0;
 			if ($lastData !== NULL) {
 				$elapsed = $lastData->idx;
