@@ -1,6 +1,6 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">{{ $appliance->name }}</h3>
+    <h3 class="panel-title">{{ $appliance->name }}<span id="app{{$appliance->id}}State" class="label" style="margin-left: 20px"></span></h3>
   </div>
   <div class="panel-body">
 	<div style="width: 25%; display: inline-block;">

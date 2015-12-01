@@ -46,18 +46,31 @@ class LiveController extends Controller {
 
         $demand = 0;
         $demands = array();
+        $appsOn = array();
         foreach($running as $run) {
             $loadData = $run->loadCurve->loadData->first();
+            $appsOn[] = $run->appliance_id;
             if ($loadData !== NULL) {
-                $demands[] = $loadData;
+                $demands[] = ["load" => $loadData, "appId" => $run->appliance_id];
                 $demand += $loadData->load;
             }
+        }
+
+        $appsOff = array();
+        $notRunning = NULL;
+        if (count($appsOn) > 0) {
+            $notRunning = Appliance::whereNotIn('id', $appsOn)->get();
+        } else {
+            $notRunning = Appliance::all();
+        }
+        foreach ($notRunning as $notRun) {
+            $appsOff[] = $notRun->id;
         }
 
         $demand /= 1000;
 
         return response()->json(['demand' => sprintf("%.2f", $demand),
-            'demands' => $demands]);
+            'demands' => $demands, 'appsOn' => $appsOn, 'appsOff' => $appsOff]);
     }
 
 }

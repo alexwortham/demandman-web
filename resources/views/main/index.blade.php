@@ -231,6 +231,18 @@
             function randomValue() {
                 $.get('/live/demand', function (data) {
                     gaugeValue = data.demand;
+                    $.each(data.appsOn, function(idx, id) {
+                        $('#app' + id + 'State')
+                                .removeClass('label-danger')
+                                .addClass('label-success')
+                                .text('Running');
+                    });
+                    $.each(data.appsOff, function (idx, id) {
+                       $('#app' + id + 'State')
+                               .removeClass('label-success')
+                               .addClass('label-danger')
+                               .text('Stopped');
+                    });
                 });
                 console.log(gaugeValue);
                 if (gaugeChart) {
