@@ -205,10 +205,13 @@ class MeterService implements Meter
 			$this->demandHistory->start($this->time);
 		}
 		while ($this->meterWait()) {
-			pcntl_signal_dispatch();
-            if (self::$event !== NULL) {
+			if (self::$event === NULL) {
+				pcntl_signal_dispatch();
+			}
+            while (self::$event !== NULL) {
 				echo "Meter loop caught event, calling handle_signal()\n".
                 $this->handle_signal();
+				pcntl_signal_dispatch();
             }
 			$this->measure();
 			$agg_data = $this->aggregate->getDataAt($this->prev_time->timestamp);
