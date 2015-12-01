@@ -40,15 +40,13 @@ class LiveController extends Controller {
     }
 
     public function demand() {
-        $running = Run::with(['loadCurve.loadData' => function($query) {
-            $query->orderBy('idx', 'desc')->take(1);
-        }])->where('is_running', true)->get();
+        $running = Run::with('loadCurve')->where('is_running', true)->get();
 
         $demand = 0;
         $demands = array();
         $appsOn = array();
         foreach($running as $run) {
-            $loadData = $run->loadCurve->loadData->first();
+            $loadData = $run->loadCurve->loadData()->orderBy('idx', 'desc')->first();
             $appsOn[] = $run->appliance_id;
             if ($loadData !== NULL) {
                 $demands[] = ["load" => $loadData, "appId" => $run->appliance_id];
